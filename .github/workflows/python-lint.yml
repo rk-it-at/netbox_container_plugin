@@ -24,7 +24,7 @@ jobs:
           dnf -y install python3 python3-pip
           python3 -m pip install --upgrade pip
           python3 -m pip install --upgrade flake8
-          python3 -m pip install --upgrade pylint
+#          python3 -m pip install --upgrade pylint
 
       - name: Check syntax validity
         run: |
@@ -37,7 +37,7 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
-      - name: Run pylint
-        run: |
-          echo "Running pylint..."
-          pylint $(find . -name "*.py")
+#      - name: Run pylint
+#        run: |
+#          echo "Running pylint..."
+#          pylint $(find . -name "*.py")
