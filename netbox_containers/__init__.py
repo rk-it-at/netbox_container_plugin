@@ -1,5 +1,5 @@
 from netbox.plugins import PluginConfig
-from django.conf import settings
+
 
 class ContainersConfig(PluginConfig):
     name = 'netbox_containers'
@@ -10,5 +10,6 @@ class ContainersConfig(PluginConfig):
     base_url = 'netbox-containers'
     author = "René Koch"
     author_email = "rkoch@rk-it.at"
+
 
 config = ContainersConfig
