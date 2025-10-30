@@ -1,12 +1,16 @@
 from netbox.plugins import PluginConfig
 
 
+__version__ = "0.1.0"
+
+
 class ContainersConfig(PluginConfig):
     name = 'netbox_containers'
     verbose_name = 'NetBox Container'
-    description = 'Manage Podman/Docker container in NetBox'
+    description = 'Netbox plugin to manage Podman/Docker container'
     min_version = "4.4.0"
-    version = '0.1'
+    max_version = "4.4.99"
+    version = __version__
     base_url = 'netbox-containers'
     author = "René Koch"
     author_email = "rkoch@rk-it.at"
