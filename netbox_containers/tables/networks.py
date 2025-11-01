@@ -1,4 +1,5 @@
 import django_tables2 as tables
+from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Network
 from netbox_containers.models.networks import NetworkDriverChoices
