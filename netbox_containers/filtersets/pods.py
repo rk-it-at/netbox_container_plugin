@@ -19,7 +19,8 @@ class PodFilterSet(NetBoxModelFilterSet):
             "status",
             "user",
             "published_ports",
-            "networks"
+            "networks",
+            "tag"
         )
 
     def search(self, queryset, name, value):

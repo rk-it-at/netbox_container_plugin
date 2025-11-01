@@ -1,6 +1,6 @@
 from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
-from utilities.forms.fields import DynamicModelMultipleChoiceField
+from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
 from dcim.models import Device
 from virtualization.models import VirtualMachine
 from ipam.models import Prefix
@@ -38,6 +38,7 @@ class NetworkForm(NetBoxModelForm):
         widget=forms.Textarea(attrs={'rows': 3, 'placeholder': '10.10.0.0/24\n192.0.2.0/25'}),
         help_text='Enter one CIDR per line if you are not using only Prefixes.',
     )
+    comments = CommentField(required=False)
 
     class Meta:
         model = Network
@@ -52,6 +53,7 @@ class NetworkForm(NetBoxModelForm):
             'label',
             'gateway',
             "tags",
+            "comments"
         ]
 
     def __init__(self, *args, **kwargs):

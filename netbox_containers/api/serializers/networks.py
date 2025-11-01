@@ -36,5 +36,6 @@ class NetworkSerializer(NetBoxModelSerializer):
             "label",
             "gateway",
             "tags",
+            "comments",
             "custom_fields",
         )

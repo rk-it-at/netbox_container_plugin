@@ -52,6 +52,7 @@ class NetworkTable(NetBoxTable):
         orderable=False,
     )
     label = tables.Column(linkify=True,)
+    tags = columns.TagColumn()
 
     class Meta(NetBoxTable.Meta):
         model = Network
@@ -66,6 +67,7 @@ class NetworkTable(NetBoxTable):
             "subnets",
             "gateway",
             "label",
+            "tags"
         )
         default_columns = (
             'name', 'user', 'subnets', 'device_count', 'vm_count', 'label'

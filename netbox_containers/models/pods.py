@@ -44,6 +44,7 @@ class Pod(NetBoxModel):
         blank=True,
         null=True,
     )
+    comments = models.TextField(blank=True)
 
     class Meta:
         verbose_name = "Pod"

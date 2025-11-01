@@ -24,5 +24,6 @@ class PodSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
             "tags",
+            "comments",
             "custom_fields",
         )
