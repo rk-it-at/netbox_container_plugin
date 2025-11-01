@@ -1,5 +1,4 @@
 from netbox.views import generic
-##from netbox.views import NetBoxUIViewSet
 from utilities.views import register_model_view
 from netbox_containers import forms, models, tables, filtersets
 from netbox_containers.models.pods import PodStatusChoices
@@ -15,9 +14,7 @@ __all__ = (
 
 @register_model_view(models.Pod)
 class PodView(generic.ObjectView):
-##class PodView(NetBoxUIViewSet):
     queryset = models.Pod.objects.all()
-#    queryset = Pod.objects.order_by("name", "pk")
     table = tables.PodTable
     filterset = filtersets.PodFilterSet
     template_name = "netbox_containers/pod.html"

@@ -11,7 +11,7 @@ __all__ = (
 
 
 class NetworkTable(NetBoxTable):
-    name = tables.Column(linkify = True,)
+    name = tables.Column(linkify=True,)
     driver = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
     subnet = tables.Column()

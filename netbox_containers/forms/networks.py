@@ -34,7 +34,6 @@ class NetworkForm(NetBoxModelForm):
             "devices",
             "virtual_machines",
             "tags",
-#            "comments"
         ]
 
     def __init__(self, *args, **kwargs):
