@@ -49,16 +49,13 @@ class Network(NetBoxModel):
         blank=True,
     )
 
-
     class Meta:
         verbose_name = "Network"
         verbose_name_plural = "Networks"
         ordering = ("name", "pk")
 
-
     def __str__(self):
         return self.name
-
 
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:network", args=[self.pk])

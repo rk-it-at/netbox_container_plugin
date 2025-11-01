@@ -15,7 +15,8 @@ class PodForm(NetBoxModelForm):
         queryset=Network.objects.all(),
         required=False,
         label="Networks",
-    )    
+    )
+
     class Meta:
         model = Pod
         fields = [

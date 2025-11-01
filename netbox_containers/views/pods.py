@@ -25,12 +25,13 @@ class PodView(generic.ObjectView):
             "PodStatusChoices": PodStatusChoices,  # expose colors mapping to the template
         }
 
+
 @register_model_view(models.Pod, "list", path="", detail=False)
 class PodListView(generic.ObjectListView):
     queryset = models.Pod.objects.all()
     table = tables.PodTable
     filterset = filtersets.PodFilterSet
-    filterset_form = forms.PodFilterForm   
+    filterset_form = forms.PodFilterForm
 
 
 @register_model_view(models.Pod, "add", detail=False)

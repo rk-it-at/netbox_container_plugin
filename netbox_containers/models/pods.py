@@ -45,16 +45,13 @@ class Pod(NetBoxModel):
         null=True,
     )
 
-
     class Meta:
         verbose_name = "Pod"
         verbose_name_plural = "Pods"
         ordering = ("name", "pk")
 
-
     def __str__(self):
         return self.name
-
 
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:pod", args=[self.pk])

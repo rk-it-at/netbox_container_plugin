@@ -18,7 +18,7 @@ class NetworkTable(NetBoxTable):
     pod_count = columns.LinkedCountColumn(
         accessor='pod_count',
         viewname='plugins:netbox_containers:pod_list',
-        url_params={'networks_id': 'pk'}, 
+        url_params={'networks_id': 'pk'},
         verbose_name="Pods",
         orderable=False,
     )
@@ -52,7 +52,6 @@ class NetworkTable(NetBoxTable):
         default_columns = (
             'name', 'user', 'subnet', 'device_count', 'vm_count'
         )
-
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

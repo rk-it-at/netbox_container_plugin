@@ -29,10 +29,10 @@ class NetworkListView(generic.ObjectListView):
         .annotate(vm_count=Count("virtual_machines", distinct=True))
         .order_by("name", "pk")
     )
-    
+
     table = tables.NetworkTable
     filterset = filtersets.NetworkFilterSet
-    filterset_form = forms.NetworkFilterForm   
+    filterset_form = forms.NetworkFilterForm
 
 
 @register_model_view(models.Network, "add", detail=False)

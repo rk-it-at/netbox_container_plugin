@@ -1,8 +1,5 @@
-##from django.db.models import Q
 from django_filters import CharFilter
 from netbox.filtersets import NetBoxModelFilterSet
-from dcim.models import Device
-from virtualization.models import VirtualMachine
 from netbox_containers import models
 
 
@@ -13,6 +10,7 @@ __all__ = (
 
 class PodFilterSet(NetBoxModelFilterSet):
     q = CharFilter(method='search', label='Search')
+
     class Meta:
         model = models.Pod
         fields = (

@@ -1,4 +1,3 @@
-##from django.db.models import Q
 from django_filters import CharFilter, ModelMultipleChoiceFilter
 from netbox.filtersets import NetBoxModelFilterSet
 from dcim.models import Device
@@ -24,6 +23,7 @@ class NetworkFilterSet(NetBoxModelFilterSet):
         queryset=VirtualMachine.objects.all(),
         label="Virtual machines",
     )
+
     class Meta:
         model = models.Network
         fields = (
