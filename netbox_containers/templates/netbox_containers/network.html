@@ -1,46 +1,258 @@
 {% extends 'generic/object.html' %}
 
 {% block content %}
-  <div class="row">
-    <div class="col col-12 col-xl-6">
-      <div class="card">
-        <h5 class="card-header">Network</h5>
-        <div class="card-body">
-          <table class="table table-hover attr-table">
-            <tr>
-              <th scope="row">Name</th>
-              <td>{{ object.name }}</td>
-            </tr>
-            <tr>
-              <th scope="row">User</th>
-              <td>{{ object.user }}</td>
-            </tr>
-            <tr>
-              <th scope="row">Driver</th>
-              <td>{{ object.driver }}</td>
-            </tr>
-            <tr>
-              <th scope="row">Network</th>
-              <td>
-              {% if object.networks.exists %}
-              {% for n in object.networks.all %}
-                <a href="{{ n.get_absolute_url }}">{{ n }}</a>{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-              {% else %}
-                <span class="text-muted">—</span>
-              {% endif %}
-              </td>
-            </tr>
-          </table>
+<div class="row gx-3">
+  {# ================= LEFT COLUMN ================= #}
+  <div class="col-12 col-xl-6">
+
+    {# --- Network panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">Network</h5>
+      <div class="card-body">
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Name</div>
+          <div class="col col-md-9">{{ object.name }}</div>
         </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">User</div>
+          <div class="col col-md-9">
+            {% if object.user %}{{ object.user }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Driver</div>
+          <div class="col col-md-9">
+            {% if object.driver %}{{ object.driver }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        {# Subnets: linked Prefixes + free-text CIDRs #}
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Subnets</div>
+          <div class="col col-md-9">
+            {% if object.prefixes.exists %}
+              {% for p in object.prefixes.all %}
+                <a href="{{ p.get_absolute_url }}">{{ p.prefix }}</a>{% if not forloop.last or object.subnets_text %}, {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% if object.subnets_text %}
+              {% for s in object.subnets_text %}
+                {{ s }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% endif %}
+            {% if not object.prefixes.exists and not object.subnets_text %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Gateway</div>
+          <div class="col col-md-9">
+            {% if object.gateway %}{{ object.gateway }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Label</div>
+          <div class="col col-md-9">
+            {% if object.label %}{{ object.label }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
       </div>
-      {% include 'inc/panels/custom_fields.html' %}
     </div>
-    <div class="col col-md-6">
-      {% include 'inc/panels/tags.html' %}
-      {% include 'inc/panels/comments.html' %}
+
+    {# --- Tags panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">Tags</h5>
+      <div class="card-body">
+        {% if object.tags.count %}
+          <div class="d-flex flex-wrap gap-2">
+            {% for tag in object.tags.all %}
+            <a class="badge text-bg-primary rounded-pill text-decoration-none"
+              href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <span class="text-muted">No tags</span>
+        {% endif %}
+      </div>
     </div>
-    <div class="col col-12 col-xl-6">
+
+    {# --- Comments panel --- #}
+    <div class="card">
+      <h5 class="card-header">Comments</h5>
+      <div class="card-body">
+        {% if object.comments %}
+          <div style="white-space:pre-wrap;">{{ object.comments }}</div>
+        {% else %}
+          <span class="text-muted">No comments</span>
+        {% endif %}
+      </div>
     </div>
   </div>
-{% endblock content %}
+
+  {# ================= RIGHT COLUMN ================= #}
+  <div class="col-12 col-xl-6">
+
+    {# --- Pods panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">
+        Pods
+        {% if object.pods.count %}
+          <span class="float-end text-muted">{{ object.pods.count }}</span>
+        {% endif %}
+      </h5>
+      <div class="card-body">
+        {% if object.pods.exists %}
+          <div class="table-responsive">
+            <table class="table table-hover table-headings">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>User</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pod in object.pods.all|dictsort:"name" %}
+                <tr>
+                  <td><a href="{{ pod.get_absolute_url }}">{{ pod }}</a></td>
+                  <td>{{ pod.user|default:"—" }}</td>
+                  <td>{{ pod.get_status_display|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <span class="text-muted">No pods associated.</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# --- Devices panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">
+        Devices
+        {% if object.devices.count %}
+          <span class="float-end text-muted">{{ object.devices.count }}</span>
+        {% endif %}
+      </h5>
+      <div class="card-body">
+        {% if object.devices.exists %}
+          <div class="table-responsive">
+            <table class="table table-hover table-headings">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Primary IPv4</th>
+                  <th>Primary IPv6</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in object.devices.all|dictsort:"name" %}
+                <tr>
+                  <td><a href="{{ d.get_absolute_url }}">{{ d }}</a></td>
+                  <td>
+                    {% with s=d.status %}
+                      {% if s == "active" %}
+                        <span class="badge text-bg-success rounded-pill">{{ d.get_status_display }}</span>
+                      {% elif s == "offline" %}
+                        <span class="badge text-bg-secondary rounded-pill">{{ d.get_status_display }}</span>
+                      {% elif s == "planned" or s == "staged" %}
+                        <span class="badge text-bg-info rounded-pill">{{ d.get_status_display }}</span>
+                      {% elif s == "failed" %}
+                        <span class="badge text-bg-danger rounded-pill">{{ d.get_status_display }}</span>
+                      {% else %}
+                        <span class="badge text-bg-light rounded-pill text-body">{{ d.get_status_display }}</span>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td>
+                    {% if d.primary_ip4 %}
+                      <a href="{{ d.primary_ip4.get_absolute_url }}">{{ d.primary_ip4 }}</a>
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                  </td>
+                  <td>
+                    {% if d.primary_ip6 %}
+                      <a href="{{ d.primary_ip6.get_absolute_url }}">{{ d.primary_ip6 }}</a>
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <span class="text-muted">No devices associated.</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# --- Virtual Machines panel --- #}
+    <div class="card">
+      <h5 class="card-header">
+        Virtual Machines
+        {% if object.virtual_machines.count %}
+          <span class="float-end text-muted">{{ object.virtual_machines.count }}</span>
+        {% endif %}
+      </h5>
+      <div class="card-body">
+        {% if object.virtual_machines.exists %}
+          <div class="table-responsive">
+            <table class="table table-hover table-headings">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Primary IPv4</th>
+                  <th>Primary IPv6</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for vm in object.virtual_machines.all|dictsort:"name" %}
+                <tr>
+                  <td><a href="{{ vm.get_absolute_url }}">{{ vm }}</a></td>
+                  <td>
+                    {% with s=vm.status %}
+                      {% if s == "active" %}
+                        <span class="badge text-bg-success rounded-pill">{{ vm.get_status_display }}</span>
+                      {% elif s == "offline" %}
+                        <span class="badge text-bg-secondary rounded-pill">{{ vm.get_status_display }}</span>
+                      {% elif s == "planned" or s == "staged" %}
+                        <span class="badge text-bg-info rounded-pill">{{ vm.get_status_display }}</span>
+                      {% else %}
+                        <span class="badge text-bg-light rounded-pill text-body">{{ vm.get_status_display }}</span>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td>
+                    {% if vm.primary_ip4 %}
+                      <a href="{{ vm.primary_ip4.get_absolute_url }}">{{ vm.primary_ip4 }}</a>
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                  </td>
+                  <td>
+                    {% if vm.primary_ip6 %}
+                      <a href="{{ vm.primary_ip6.get_absolute_url }}">{{ vm.primary_ip6 }}</a>
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <span class="text-muted">No virtual machines associated.</span>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
