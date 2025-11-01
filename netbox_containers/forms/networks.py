@@ -50,6 +50,7 @@ class NetworkForm(NetBoxModelForm):
             'prefixes',
             'subnets_text_input',
             'label',
+            'gateway',
             "tags",
         ]
 

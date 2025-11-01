@@ -40,7 +40,8 @@ class NetworkFilterSet(NetBoxModelFilterSet):
             "devices",
             "virtual_machines",
             "prefixes",
-            "label"
+            "label",
+            "gateway"
         )
 
     def search(self, queryset, name, value):

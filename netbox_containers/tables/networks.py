@@ -64,6 +64,7 @@ class NetworkTable(NetBoxTable):
             "device_count",
             "vm_count",
             "subnets",
+            "gateway",
             "label",
         )
         default_columns = (

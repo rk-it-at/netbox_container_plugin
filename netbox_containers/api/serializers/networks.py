@@ -34,6 +34,7 @@ class NetworkSerializer(NetBoxModelSerializer):
             "prefixes",
             "effective_subnets",
             "label",
+            "gateway",
             "tags",
             "custom_fields",
         )
