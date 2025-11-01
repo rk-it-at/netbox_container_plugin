@@ -49,6 +49,7 @@ class NetworkForm(NetBoxModelForm):
             "virtual_machines",
             'prefixes',
             'subnets_text_input',
+            'label',
             "tags",
         ]
 

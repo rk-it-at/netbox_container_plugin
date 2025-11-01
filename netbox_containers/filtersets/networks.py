@@ -39,7 +39,8 @@ class NetworkFilterSet(NetBoxModelFilterSet):
             "user",
             "devices",
             "virtual_machines",
-            "prefixes"
+            "prefixes",
+            "label"
         )
 
     def search(self, queryset, name, value):

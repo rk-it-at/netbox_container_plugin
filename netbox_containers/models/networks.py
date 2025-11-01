@@ -55,6 +55,11 @@ class Network(NetBoxModel):
         blank=True,
     )
     subnets_text = models.JSONField(default=list, blank=True)
+    label = models.CharField(
+        max_length=100,
+        blank=True
+,
+null=True    )
 
     class Meta:
         verbose_name = "Network"

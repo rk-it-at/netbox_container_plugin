@@ -33,6 +33,7 @@ class NetworkSerializer(NetBoxModelSerializer):
             "virtual_machines",
             "prefixes",
             "effective_subnets",
+            "label",
             "tags",
             "custom_fields",
         )

@@ -51,6 +51,7 @@ class NetworkTable(NetBoxTable):
         """,
         orderable=False,
     )
+    label = tables.Column(linkify=True,)
 
     class Meta(NetBoxTable.Meta):
         model = Network
@@ -62,10 +63,11 @@ class NetworkTable(NetBoxTable):
             "pod_count",
             "device_count",
             "vm_count",
-            "subnets"
+            "subnets",
+            "label",
         )
         default_columns = (
-            'name', 'user', 'subnets', 'device_count', 'vm_count'
+            'name', 'user', 'subnets', 'device_count', 'vm_count', 'label'
         )
 
     def get_queryset(self, request):
