@@ -1,24 +1,47 @@
 from django.db.models import Count
 from netbox.views import generic
 from utilities.views import register_model_view
-#from netbox_containers import filtersets, forms, models, tables
-from netbox_containers import filtersets, models, tables
+from netbox_containers import forms, models, tables, filtersets
 
 
 __all__ = (
     "NetworkView",
     "NetworkListView",
+    "NetworkEditView",
+    "NetworkDeleteView",
 )
-
-
-@register_model_view(models.Network, "list", path="", detail=False)
-class NetworkListView(generic.ObjectListView):
-    queryset = models.Network.objects.all()
-    table = tables.NetworkTable
-    filterset = filtersets.NetworkFilterSet
 
 
 @register_model_view(models.Network)
 class NetworkView(generic.ObjectView):
     queryset = models.Network.objects.all()
-#    table = tables.NetworkTable
+    table = tables.NetworkTable
+    filterset = filtersets.NetworkFilterSet
+    template_name = "netbox_containers/network.html"
+
+
+@register_model_view(models.Network, "list", path="", detail=False)
+class NetworkListView(generic.ObjectListView):
+    queryset = (
+        models.Network.objects
+        .annotate(pod_count=Count("pods", distinct=True))
+        .annotate(device_count=Count("devices", distinct=True))
+        .annotate(vm_count=Count("virtual_machines", distinct=True))
+        .order_by("name", "pk")
+    )
+    
+    table = tables.NetworkTable
+    filterset = filtersets.NetworkFilterSet
+    filterset_form = forms.NetworkFilterForm   
+
+
+@register_model_view(models.Network, "add", detail=False)
+@register_model_view(models.Network, "edit")
+class NetworkEditView(generic.ObjectEditView):
+    queryset = models.Network.objects.all()
+    form = forms.NetworkForm
+
+
+@register_model_view(models.Network, "delete")
+class NetworkDeleteView(generic.ObjectDeleteView):
+    queryset = models.Network.objects.all()

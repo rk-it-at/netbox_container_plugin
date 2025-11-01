@@ -38,11 +38,18 @@ class Pod(NetBoxModel):
     )
     user = models.CharField(max_length=100, blank=True, null=True)
     published_ports = models.CharField(max_length=200, blank=True, null=True)
+    networks = models.ManyToManyField(
+        'netbox_containers.Network',
+        related_name='pods',
+        blank=True,
+        null=True,
+    )
 
 
     class Meta:
         verbose_name = "Pod"
         verbose_name_plural = "Pods"
+        ordering = ("name", "pk")
 
 
     def __str__(self):

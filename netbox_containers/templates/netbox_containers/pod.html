@@ -1,0 +1,57 @@
+{% extends 'generic/object.html' %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Pod</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Status</th>
+              <td>{{ object.status }}</td>
+              {% with label=object.get_status_display %}
+                {% with color=PodStatusChoices.colors|get_item:object.status %}
+                  {% if color %}
+                    {% badge label color %}
+                  {% else %}
+                    {{ label }}
+                  {% endif %}
+                {% endwith %}
+              {% endwith %}
+            </tr>
+            <tr>
+              <th scope="row">User</th>
+              <td>{{ object.user }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Published Ports</th>
+              <td>{{ object.published_ports }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Network</th>
+              <td>
+              {% if object.networks.exists %}
+              {% for n in object.networks.all %}
+                <a href="{{ n.get_absolute_url }}">{{ n }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

@@ -14,6 +14,7 @@ class PodTable(NetBoxTable):
     status = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
     published_ports = tables.Column()
+    networks = tables.ManyToManyColumn(linkify_item=True)
 
     class Meta(NetBoxTable.Meta):
         model = Pod
@@ -23,5 +24,6 @@ class PodTable(NetBoxTable):
             "status",
             "user",
             "published_ports",
+            "networks",
         )
-        default_columns = ("name", "status", "published_ports")
+        default_columns = ("name", "status", "networks", "published_ports")

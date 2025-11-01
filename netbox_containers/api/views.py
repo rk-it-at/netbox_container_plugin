@@ -13,9 +13,15 @@ class ContainersRootView(APIRootView):
         return "Containers Plugin"
 
 
-
 class PodViewSet(NetBoxModelViewSet):
     queryset = models.Pod.objects.all()
 
     serializer_class = serializers.PodSerializer
     filterset_class = filtersets.PodFilterSet
+
+
+class NetworkViewSet(NetBoxModelViewSet):
+    queryset = models.Network.objects.all()
+
+    serializer_class = serializers.NetworkSerializer
+    filterset_class = filtersets.NetworkFilterSet

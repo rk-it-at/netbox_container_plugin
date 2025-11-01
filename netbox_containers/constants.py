@@ -5,3 +5,9 @@ DEFAULT_POD_STATUSES = [
     ("exited", "Exited", "orange"),
     ("dead", "Dead", "red"),
 ]
+
+DEFAULT_NETWORK_DRIVERS = [
+    ("bridge", "Bridge"),
+    ("macvlan", "macvlan"),
+    ("ipvlan", "ipvlan"),
+]

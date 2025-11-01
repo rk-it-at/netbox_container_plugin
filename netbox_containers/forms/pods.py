@@ -1,5 +1,6 @@
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
-from netbox_containers.models import Pod
+from utilities.forms.fields import DynamicModelMultipleChoiceField
+from netbox_containers.models import Pod, Network
 from netbox_containers.filtersets import PodFilterSet
 
 
@@ -10,6 +11,11 @@ __all__ = (
 
 
 class PodForm(NetBoxModelForm):
+    networks = DynamicModelMultipleChoiceField(
+        queryset=Network.objects.all(),
+        required=False,
+        label="Networks",
+    )    
     class Meta:
         model = Pod
         fields = [
@@ -17,6 +23,8 @@ class PodForm(NetBoxModelForm):
             "status",
             "user",
             "published_ports",
+            "networks",
+            "tags",
         ]
 
     def __init__(self, *args, **kwargs):

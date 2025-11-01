@@ -4,25 +4,26 @@ from netbox_containers import models
 
 
 __all__ = (
-    "PodSerializer",
+    "NetworkSerializer",
 )
 
 
-class PodSerializer(NetBoxModelSerializer):
+class NetworkSerializer(NetBoxModelSerializer):
 
     class Meta:
-        model = models.Pod
+        model = models.Network
         fields = (
             "name",
-            "status",
+            "driver",
             "user",
-            "published_ports",
-            "networks",
+            "subnet",
             "id",
             "url",
             "display",
             "created",
             "last_updated",
+            "devices",
+            "virtual_machines",
             "tags",
             "custom_fields",
         )

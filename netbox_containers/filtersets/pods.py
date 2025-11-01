@@ -1,4 +1,5 @@
-from django.db.models import Q
+##from django.db.models import Q
+from django_filters import CharFilter
 from netbox.filtersets import NetBoxModelFilterSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
@@ -11,7 +12,7 @@ __all__ = (
 
 
 class PodFilterSet(NetBoxModelFilterSet):
-
+    q = CharFilter(method='search', label='Search')
     class Meta:
         model = models.Pod
         fields = (
@@ -20,4 +21,10 @@ class PodFilterSet(NetBoxModelFilterSet):
             "status",
             "user",
             "published_ports",
+            "networks"
         )
+
+    def search(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(name__icontains=value)
