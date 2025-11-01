@@ -14,7 +14,6 @@ class NetworkTable(NetBoxTable):
     name = tables.Column(linkify=True,)
     driver = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
-    subnet = tables.Column()
     pod_count = columns.LinkedCountColumn(
         accessor='pod_count',
         viewname='plugins:netbox_containers:pod_list',
@@ -36,6 +35,22 @@ class NetworkTable(NetBoxTable):
         url_params={"container_networks_id": "pk"},
         orderable=False,
     )
+    subnets = tables.TemplateColumn(
+        verbose_name='Subnets',
+        template_code="""
+        {% if record.prefixes.all %}
+          {% for p in record.prefixes.all %}
+            <a href="{{ p.get_absolute_url }}">{{ p.prefix }}</a>{% if not forloop.last or record.subnets_text %}, {% endif %}
+          {% endfor %}
+        {% endif %}
+        {% if record.subnets_text %}
+          {% for s in record.subnets_text %}
+            {{ s }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        {% endif %}
+        """,
+        orderable=False,
+    )
 
     class Meta(NetBoxTable.Meta):
         model = Network
@@ -44,13 +59,13 @@ class NetworkTable(NetBoxTable):
             'name',
             'driver',
             'user',
-            'subnet',
             "pod_count",
             "device_count",
-            "vm_count"
+            "vm_count",
+            "subnets"
         )
         default_columns = (
-            'name', 'user', 'subnet', 'device_count', 'vm_count'
+            'name', 'user', 'subnets', 'device_count', 'vm_count'
         )
 
     def get_queryset(self, request):

@@ -2,6 +2,7 @@ from django_filters import CharFilter, ModelMultipleChoiceFilter
 from netbox.filtersets import NetBoxModelFilterSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
+from ipam.models import Prefix
 from netbox_containers import models
 
 
@@ -23,6 +24,11 @@ class NetworkFilterSet(NetBoxModelFilterSet):
         queryset=VirtualMachine.objects.all(),
         label="Virtual machines",
     )
+    prefixes = ModelMultipleChoiceFilter(
+        field_name='prefixes',
+        queryset=Prefix.objects.all(),
+        label='Prefixes',
+    )
 
     class Meta:
         model = models.Network
@@ -31,9 +37,9 @@ class NetworkFilterSet(NetBoxModelFilterSet):
             "name",
             "driver",
             "user",
-            "subnet",
             "devices",
-            "virtual_machines"
+            "virtual_machines",
+            "prefixes"
         )
 
     def search(self, queryset, name, value):
