@@ -78,6 +78,7 @@ class NetworkForm(NetBoxModelForm):
             self.save_m2m()
         return obj
 
+
 class NetworkFilterForm(NetBoxModelFilterSetForm):
     model = Network
     filterset_class = NetworkFilterSet
