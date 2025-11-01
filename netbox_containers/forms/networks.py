@@ -57,7 +57,6 @@ class NetworkForm(NetBoxModelForm):
         # Populate textarea from existing JSON list
         if self.instance and self.instance.pk and self.instance.subnets_text:
             self.fields['subnets_text_input'].initial = '\n'.join(self.instance.subnets_text)
-#        self.fields["infra"].queryset = Container.objects.filter(isinfra=True)
 
     def clean_subnets_text_input(self):
         # Return a normalized list from the textarea; actual CIDR validation is in model.clean()
