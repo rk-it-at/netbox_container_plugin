@@ -19,3 +19,21 @@ class NetworkDriverChoices(ChoiceSet):
         ("macvlan", "macvlan"),
         ("ipvlan", "ipvlan"),
     ]
+
+class ImageArchChoices(ChoiceSet):
+    key = "ImageTag.arch"
+    CHOICES = [
+        ("amd64",  "amd64"),
+        ("arm64",  "arm64"),
+        ("armv7",  "arm/v7"),
+        ("s390x",  "s390x"),
+        ("ppc64le","ppc64le"),
+        ("riscv64","riscv64"),
+    ]
+
+class ImageOSChoices(ChoiceSet):
+    key = "ImageTag.os"
+    CHOICES = [
+        ("linux",   "Linux"),
+        ("windows", "Windows"),
+    ]
