@@ -105,4 +105,18 @@ class NetworkBulkEditForm(NetBoxModelBulkEditForm):
 
 class NetworkFilterForm(NetBoxModelFilterSetForm):
     model = Network
-    filterset_class = NetworkFilterSet
+
+    q = forms.CharField(required=False, label="Search")
+
+    driver = forms.ChoiceField(
+        choices=Network._meta.get_field("driver").choices,
+        required=False,
+        label=_("Driver"),
+    )
+    user   = forms.CharField(required=False, label="User")
+    label   = forms.CharField(required=False, label="Label")
+    gateway   = forms.CharField(required=False, label="Gateway")
+
+    fieldsets = (
+        FieldSet("q", "status", "user", "driver", "label", "gateway", name=_("Networks")),
+    )

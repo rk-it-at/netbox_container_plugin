@@ -1,9 +1,11 @@
+import django_filters as filters
 from django_filters import CharFilter, ModelMultipleChoiceFilter
 from netbox.filtersets import NetBoxModelFilterSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
 from ipam.models import Prefix
 from netbox_containers import models
+from netbox_containers.models import Network
 
 
 __all__ = (
@@ -28,6 +30,9 @@ class NetworkFilterSet(NetBoxModelFilterSet):
         field_name='prefixes',
         queryset=Prefix.objects.all(),
         label='Prefixes',
+    )
+    driver = filters.MultipleChoiceFilter(
+        choices=Network._meta.get_field("driver").choices
     )
 
     class Meta:

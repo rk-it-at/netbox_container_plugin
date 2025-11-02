@@ -1,6 +1,7 @@
+import django_filters as filters
 from django_filters import CharFilter
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_containers import models
+from netbox_containers.models import Pod
 
 
 __all__ = (
@@ -11,8 +12,12 @@ __all__ = (
 class PodFilterSet(NetBoxModelFilterSet):
     q = CharFilter(method='search', label='Search')
 
+    status = filters.MultipleChoiceFilter(
+        choices=Pod._meta.get_field("status").choices
+    )
+
     class Meta:
-        model = models.Pod
+        model = Pod
         fields = (
             "id",
             "name",

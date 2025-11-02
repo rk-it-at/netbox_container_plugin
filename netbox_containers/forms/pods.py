@@ -4,7 +4,6 @@ from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelB
 from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
 from utilities.forms.rendering import FieldSet
 from netbox_containers.models import Pod, Network
-from netbox_containers.filtersets import PodFilterSet
 
 
 __all__ = (
@@ -56,4 +55,23 @@ class PodBulkEditForm(NetBoxModelBulkEditForm):
 
 class PodFilterForm(NetBoxModelFilterSetForm):
     model = Pod
-    filterset_class = PodFilterSet
+
+    q = forms.CharField(required=False, label="Search")
+
+    status = forms.ChoiceField(
+        choices=Pod._meta.get_field("status").choices,
+        required=False,
+        label=_("Status"),
+    )
+    user   = forms.CharField(required=False, label="User")
+
+    # Filter Pods by related Networks
+    networks = DynamicModelMultipleChoiceField(
+        queryset=Network.objects.all(),
+        required=False,
+        label="Networks"
+    )
+
+    fieldsets = (
+        FieldSet("q", "status", "user", "networks", name=_("Pods")),
+    )
