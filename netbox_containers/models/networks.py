@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-from utilities.choices import ChoiceSet
 from ipaddress import ip_network
 from netbox.models import NetBoxModel
 from netbox_containers.constants import NetworkDriverChoices
