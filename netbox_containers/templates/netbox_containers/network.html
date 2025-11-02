@@ -103,9 +103,6 @@
     <div class="card mb-3">
       <h5 class="card-header">
         Pods
-        {% if object.pods.count %}
-          <span class="float-end text-muted">{{ object.pods.count }}</span>
-        {% endif %}
       </h5>
       <div class="card-body">
         {% if object.pods.exists %}
@@ -139,9 +136,6 @@
     <div class="card mb-3">
       <h5 class="card-header">
         Devices
-        {% if object.devices.count %}
-          <span class="float-end text-muted">{{ object.devices.count }}</span>
-        {% endif %}
       </h5>
       <div class="card-body">
         {% if object.devices.exists %}
@@ -199,9 +193,6 @@
     <div class="card">
       <h5 class="card-header">
         Virtual Machines
-        {% if object.virtual_machines.count %}
-          <span class="float-end text-muted">{{ object.virtual_machines.count }}</span>
-        {% endif %}
       </h5>
       <div class="card-body">
         {% if object.virtual_machines.exists %}

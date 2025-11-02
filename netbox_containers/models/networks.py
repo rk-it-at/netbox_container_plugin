@@ -4,31 +4,12 @@ from django.core.exceptions import ValidationError
 from utilities.choices import ChoiceSet
 from ipaddress import ip_network
 from netbox.models import NetBoxModel
-from netbox_containers import constants
-from netbox_containers.constants import DEFAULT_NETWORK_DRIVERS
-from netbox_containers.utils import get_plugin_config
+from netbox_containers.constants import NetworkDriverChoices
 
 
 __all__ = (
     "Network",
-    "NetworkDriverChoices"
 )
-
-
-class NetworkDriverChoices(ChoiceSet):
-    key = "Network.status"
-    CHOICES = get_plugin_config("NETWORK_DRIVERS", DEFAULT_NETWORK_DRIVERS) or []
-
-    COLORS = {}
-    for choice in CHOICES:
-        if len(choice) == 3:
-            key, _, color = choice
-        elif len(choice) == 2:
-            key, _ = choice
-            color = "gray"
-        else:
-            continue
-        COLORS[key] = color
 
 
 class Network(NetBoxModel):
@@ -36,7 +17,6 @@ class Network(NetBoxModel):
     driver = models.CharField(
         max_length=20,
         choices=NetworkDriverChoices,
-        default=NetworkDriverChoices.CHOICES[0][0],
     )
     user = models.CharField(max_length=100, blank=True, null=True)
     devices = models.ManyToManyField(

@@ -1,4 +1,3 @@
-# netbox_containers/navigation.py
 from netbox.plugins import PluginMenu, PluginMenuItem, PluginMenuButton
 from netbox.choices import ButtonColorChoices
 

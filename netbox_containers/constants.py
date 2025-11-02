@@ -1,13 +1,21 @@
-DEFAULT_POD_STATUSES = [
-    ("created", "Created", "gray"),
-    ("running", "Running", "green"),
-    ("stopped", "Stopped", "yellow"),
-    ("exited", "Exited", "orange"),
-    ("dead", "Dead", "red"),
-]
+from utilities.choices import ChoiceSet
 
-DEFAULT_NETWORK_DRIVERS = [
-    ("bridge", "Bridge"),
-    ("macvlan", "macvlan"),
-    ("ipvlan", "ipvlan"),
-]
+
+class PodStatusChoices(ChoiceSet):
+    key = 'Pod.status'
+    CHOICES = [
+        ("created", "Created", "grey"),
+        ("running", "Running", "green"),
+        ("stopped", "Stopped", "yellow"),
+        ("exited",  "Exited",  "orange"),
+        ("dead",    "Dead",    "red"),
+    ]
+    colors = {v: c for v, _, c in CHOICES}
+
+class NetworkDriverChoices(ChoiceSet):
+    key = 'Network.driver'
+    CHOICES = [
+        ("bridge", "Bridge"),
+        ("macvlan", "macvlan"),
+        ("ipvlan", "ipvlan"),
+    ]
