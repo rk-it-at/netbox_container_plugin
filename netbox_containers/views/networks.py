@@ -45,3 +45,18 @@ class NetworkEditView(generic.ObjectEditView):
 @register_model_view(models.Network, "delete")
 class NetworkDeleteView(generic.ObjectDeleteView):
     queryset = models.Network.objects.all()
+
+
+@register_model_view(models.Network, "bulk_edit", path="bulk-edit", detail=False)
+class NetworkBulkEditView(generic.BulkEditView):
+    queryset = models.Network.objects.all()
+    table = tables.NetworkTable
+    filterset = filtersets.NetworkFilterSet
+    form = forms.NetworkBulkEditForm
+
+
+@register_model_view(models.Network, "bulk_delete", path="bulk-delete", detail=False)
+class NetworkBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.Network.objects.all()
+    table = tables.NetworkTable
+    filterset = filtersets.NetworkFilterSet

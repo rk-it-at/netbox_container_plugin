@@ -44,3 +44,18 @@ class PodEditView(generic.ObjectEditView):
 @register_model_view(models.Pod, "delete")
 class PodDeleteView(generic.ObjectDeleteView):
     queryset = models.Pod.objects.all()
+
+
+@register_model_view(models.Pod, "bulk_edit", path="bulk-edit", detail=False)
+class PodBulkEditView(generic.BulkEditView):
+    queryset = models.Pod.objects.all()
+    table = tables.PodTable
+    filterset = filtersets.PodFilterSet
+    form = forms.PodBulkEditForm
+
+
+@register_model_view(models.Pod, "bulk_delete", path="bulk-delete", detail=False)
+class PodBulkDeleteView(generic.BulkDeleteView):
+    queryset = models.Pod.objects.all()
+    table = tables.PodTable
+    filterset = filtersets.PodFilterSet

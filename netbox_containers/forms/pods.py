@@ -1,5 +1,8 @@
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
+from django import forms
+from django.utils.translation import gettext_lazy as _
+from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
 from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
+from utilities.forms.rendering import FieldSet
 from netbox_containers.models import Pod, Network
 from netbox_containers.filtersets import PodFilterSet
 
@@ -7,6 +10,7 @@ from netbox_containers.filtersets import PodFilterSet
 __all__ = (
     "PodForm",
     "PodFilterForm",
+    "PodBulkEditForm",
 )
 
 
@@ -32,7 +36,22 @@ class PodForm(NetBoxModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-#        self.fields["infra"].queryset = Container.objects.filter(isinfra=True)
+
+
+class PodBulkEditForm(NetBoxModelBulkEditForm):
+    model = Pod
+
+    user = forms.CharField(required=False)
+    comments = CommentField(required=False)
+
+    fieldsets = (
+        FieldSet(
+            "user",
+            name=_("Pod"),
+        ),
+    )
+
+    nullable_fields = ("user", "comments")  
 
 
 class PodFilterForm(NetBoxModelFilterSetForm):

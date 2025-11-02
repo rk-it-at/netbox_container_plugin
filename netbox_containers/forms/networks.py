@@ -1,6 +1,8 @@
 from django import forms
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
+from django.utils.translation import gettext_lazy as _
+from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
 from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
+from utilities.forms.rendering import FieldSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
 from ipam.models import Prefix
@@ -11,6 +13,7 @@ from netbox_containers.filtersets import NetworkFilterSet
 __all__ = (
     "NetworkForm",
     "NetworkFilterForm",
+    "NetworkBulkEditForm",
 )
 
 
@@ -80,6 +83,24 @@ class NetworkForm(NetBoxModelForm):
             obj.save()
             self.save_m2m()
         return obj
+
+
+class NetworkBulkEditForm(NetBoxModelBulkEditForm):
+    model = Network
+
+    user = forms.CharField(required=False)
+    label = forms.CharField(required=False)
+    comments = CommentField(required=False)
+
+    fieldsets = (
+        FieldSet(
+            "user",
+            "label",
+            name=_("Network"),
+        ),
+    )
+
+    nullable_fields = ("user", "gateway", "label", "comments")       
 
 
 class NetworkFilterForm(NetBoxModelFilterSetForm):
