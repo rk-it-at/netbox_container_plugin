@@ -16,6 +16,20 @@ class PodTable(NetBoxTable):
     published_ports = tables.Column()
     networks = tables.ManyToManyColumn(linkify_item=True)
     tags = columns.TagColumn()
+    device_count = columns.LinkedCountColumn(
+        accessor="device_count",
+        verbose_name="Devices",
+        viewname="dcim:device_list",
+        url_params={"container_pods_id": "pk"},
+        orderable=False,
+    )
+    vm_count = columns.LinkedCountColumn(
+        accessor="vm_count",
+        verbose_name="Virtual machines",
+        viewname="virtualization:virtualmachine_list",
+        url_params={"container_pods_id": "pk"},
+        orderable=False,
+    )
 
     class Meta(NetBoxTable.Meta):
         model = Pod
@@ -26,6 +40,8 @@ class PodTable(NetBoxTable):
             "user",
             "published_ports",
             "networks",
+            "device_count",
+            "vm_count",
             "tags"
         )
-        default_columns = ("name", "status", "networks", "published_ports")
+        default_columns = ("name", "status", "networks", "published_ports", "device_count", "vm_count")

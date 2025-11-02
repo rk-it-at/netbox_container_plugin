@@ -18,6 +18,8 @@ class PodSerializer(NetBoxModelSerializer):
             "user",
             "published_ports",
             "networks",
+            "devices",
+            "virtual_machines",
             "id",
             "url",
             "display",

@@ -24,6 +24,16 @@ class Pod(NetBoxModel):
         null=True,
     )
     comments = models.TextField(blank=True)
+    devices = models.ManyToManyField(
+        "dcim.Device",
+        related_name="container_pods",
+        blank=True,
+    )
+    virtual_machines = models.ManyToManyField(
+        "virtualization.VirtualMachine",
+        related_name="container_pods",
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "Pod"

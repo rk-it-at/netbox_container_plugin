@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
 from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
 from utilities.forms.rendering import FieldSet
+from dcim.models import Device
+from virtualization.models import VirtualMachine
 from netbox_containers.models import Pod, Network
 
 
@@ -20,6 +22,16 @@ class PodForm(NetBoxModelForm):
         label="Networks",
     )
     comments = CommentField(required=False)
+    devices = DynamicModelMultipleChoiceField(
+        queryset=Device.objects.all(),
+        required=False,
+        label="Devices",
+    )
+    virtual_machines = DynamicModelMultipleChoiceField(
+        queryset=VirtualMachine.objects.all(),
+        required=False,
+        label="Virtual machines",
+    )
 
     class Meta:
         model = Pod
@@ -29,6 +41,8 @@ class PodForm(NetBoxModelForm):
             "user",
             "published_ports",
             "networks",
+            "devices",
+            "virtual_machines",
             "tags",
             "comments"
         ]
