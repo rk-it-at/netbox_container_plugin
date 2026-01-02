@@ -5,9 +5,9 @@
   {# ================= LEFT COLUMN ================= #}
   <div class="col-12 col-xl-6">
 
-    {# --- Pod panel --- #}
+    {# --- Volume panel --- #}
     <div class="card mb-3">
-      <h5 class="card-header">Pod</h5>
+      <h5 class="card-header">Volume</h5>
       <div class="card-body">
 
         <div class="row mb-2">
@@ -16,23 +16,23 @@
         </div>
 
         <div class="row mb-2">
-          <div class="col col-md-3 text-muted">User</div>
+          <div class="col col-md-3 text-muted">Driver</div>
           <div class="col col-md-9">
-            {% if object.user %}{{ object.user }}{% else %}<span class="text-muted">—</span>{% endif %}
+            {% if object.driver %}{{ object.driver }}{% else %}<span class="text-muted">—</span>{% endif %}
           </div>
         </div>
 
         <div class="row mb-2">
-          <div class="col col-md-3 text-muted">Status</div>
+          <div class="col col-md-3 text-muted">Options</div>
           <div class="col col-md-9">
-            {% if object.status %}{{ object.status }}{% else %}<span class="text-muted">—</span>{% endif %}
+            {% if object.options %}{{ object.options }}{% else %}<span class="text-muted">—</span>{% endif %}
           </div>
         </div>
 
         <div class="row mb-2">
-          <div class="col col-md-3 text-muted">Published Ports</div>
+          <div class="col col-md-3 text-muted">Labels</div>
           <div class="col col-md-9">
-            {% if object.published_ports %}{{ object.published_ports }}{% else %}<span class="text-muted">—</span>{% endif %}
+            {% if object.label %}{{ object.label }}{% else %}<span class="text-muted">—</span>{% endif %}
           </div>
         </div>
 
@@ -71,55 +71,6 @@
 
   {# ================= RIGHT COLUMN ================= #}
   <div class="col-12 col-xl-6">
-
-    {# --- Networks panel --- #}
-    <div class="card mb-3">
-      <h5 class="card-header">
-        Networks
-      </h5>
-      <div class="card-body">
-        {% if object.networks.exists %}
-          <div class="table-responsive">
-            <table class="table table-hover table-headings">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Subnets</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for network in object.networks.all|dictsort:"name" %}
-                <tr>
-                  <td><a href="{{ network.get_absolute_url }}">{{ network }}</a></td>
-                  <td>
-                    {% with prefixes=network.prefixes.all %}
-                        {% if prefixes or network.subnets_text %}
-                          {# Linked prefixes first #}
-                          {% for p in prefixes %}
-                            <a href="{{ p.get_absolute_url }}">{{ p.prefix }}</a>{% if not forloop.last or network.subnets_text %}, {% endif %}
-                          {% endfor %}
-
-                          {# Followed by free-text CIDRs (JSON list) #}
-                          {% if network.subnets_text %}
-                            {% for s in network.subnets_text %}
-                              {{ s }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                          {% endif %}
-                        {% else %}
-                          <span class="text-muted">—</span>
-                        {% endif %}
-                      {% endwith %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <span class="text-muted">No networks associated.</span>
-        {% endif %}
-      </div>
-    </div>
 
     {# --- Devices panel --- #}
     <div class="card mb-3">

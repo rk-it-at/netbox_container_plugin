@@ -61,10 +61,25 @@ imagetags = PluginMenuItem(
     ),
 )
 
+volumes = PluginMenuItem(
+    link="plugins:netbox_containers:volume_list",
+    link_text="Volumes",
+    permissions=["netbox_containers.view_volume"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:volume_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_volume"],
+        ),
+    ),
+)
+
 menu = PluginMenu(
     label="Containers",
     groups=(
-        ("Inventory", (pods, networks, images, imagetags)),
+        ("Inventory", (pods, networks, images, imagetags, volumes)),
     ),
     icon_class="mdi mdi-docker",
 )

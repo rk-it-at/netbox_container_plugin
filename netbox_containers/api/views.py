@@ -39,3 +39,10 @@ class ImageTagViewSet(NetBoxModelViewSet):
 
     serializer_class = serializers.ImageTagSerializer
     filterset_class = filtersets.ImageTagFilterSet
+
+
+class VolumeViewSet(NetBoxModelViewSet):
+    queryset = models.Volume.objects.all()
+
+    serializer_class = serializers.VolumeSerializer
+    filterset_class = filtersets.VolumeFilterSet

@@ -37,3 +37,10 @@ class ImageOSChoices(ChoiceSet):
         ("linux",   "Linux"),
         ("windows", "Windows"),
     ]
+
+class VolumeDriverChoices(ChoiceSet):
+    key = 'Volume.driver'
+    CHOICES = [
+        ("local", "local"),
+        ("image", "image"),
+    ]

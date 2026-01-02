@@ -11,5 +11,6 @@ router.register("pods", views.PodViewSet)
 router.register("networks", views.NetworkViewSet)
 router.register("images", views.ImageViewSet)
 router.register("imagetags", views.ImageTagViewSet)
+router.register("volumes", views.VolumeViewSet)
 
 urlpatterns = router.urls

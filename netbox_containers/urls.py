@@ -15,4 +15,5 @@ urlpatterns = (
     *get_urls("pod", "pods"),
     *get_urls("image", "images"),
     *get_urls("imagetag", "imagetags"),
+    *get_urls("volume", "volumes"),
 )
