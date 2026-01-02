@@ -13,4 +13,6 @@ def get_urls(model_name, url_prefix, *, pk="<int:pk>"):
 urlpatterns = (
     *get_urls("network", "networks"),
     *get_urls("pod", "pods"),
+    *get_urls("image", "images"),
+    *get_urls("imagetag", "imagetags"),
 )

@@ -9,5 +9,7 @@ router = NetBoxRouter()
 router.APIRootView = views.ContainersRootView
 router.register("pods", views.PodViewSet)
 router.register("networks", views.NetworkViewSet)
+router.register("images", views.ImageViewSet)
+router.register("imagetags", views.ImageTagViewSet)
 
 urlpatterns = router.urls

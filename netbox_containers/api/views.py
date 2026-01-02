@@ -25,3 +25,17 @@ class NetworkViewSet(NetBoxModelViewSet):
 
     serializer_class = serializers.NetworkSerializer
     filterset_class = filtersets.NetworkFilterSet
+
+
+class ImageViewSet(NetBoxModelViewSet):
+    queryset = models.Image.objects.all()
+
+    serializer_class = serializers.ImageSerializer
+    filterset_class = filtersets.ImageFilterSet
+
+
+class ImageTagViewSet(NetBoxModelViewSet):
+    queryset = models.ImageTag.objects.all()
+
+    serializer_class = serializers.ImageTagSerializer
+    filterset_class = filtersets.ImageTagFilterSet

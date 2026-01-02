@@ -11,7 +11,6 @@ __all__ = (
 )
 
 
-
 _registry_validator = RegexValidator(
     regex=r"^[a-z0-9][a-z0-9.-]*(:\d+)?$",
     message="Registry must be a hostname (optionally with port). Example: registry-1.docker.io or quay.io"
@@ -49,9 +48,12 @@ class ImageTag(NetBoxModel):
     image_tag = models.CharField(max_length=128, blank=True, default="latest")
     os      = models.CharField(max_length=32, choices=ImageOSChoices, blank=True)
     arch    = models.CharField(max_length=32, choices=ImageArchChoices, blank=True)
+    digest  = models.CharField(max_length=128, blank=True, help_text="sha256:… (optional)")
+    size    = models.BigIntegerField(blank=True, null=True, help_text="bytes (optional)")
+    comments = models.TextField(blank=True)
 
     class Meta:
-        ordering = ("image__registry", "image__name", "image_tag", "arch", "os", "pk")
+        ordering = ("image__registry", "image__name", "image_tag", "arch", "os", "digest", "size", "pk")
         constraints = [
             models.UniqueConstraint(
                 fields=["image", "image_tag", "os", "arch"],
@@ -66,9 +68,9 @@ class ImageTag(NetBoxModel):
         if self.os: suffix.append(self.os)
         if self.arch: suffix.append(self.arch)
         va = f" ({'/'.join(suffix)})" if suffix else ""
-        return f"{self.image.reference}:{self.tag}{va}"
+        return f"{self.image.reference}:{self.image_tag}{va}"
 
     @property
     def full_reference(self):
         # Includes tag
-        return f"{self.image.reference}:{self.tag or 'latest'}"
+        return f"{self.image.reference}:{self.image_tag or 'latest'}"
