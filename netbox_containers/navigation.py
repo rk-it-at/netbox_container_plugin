@@ -1,6 +1,21 @@
 from netbox.plugins import PluginMenu, PluginMenuItem, PluginMenuButton
 from netbox.choices import ButtonColorChoices
 
+containers = PluginMenuItem(
+    link="plugins:netbox_containers:container_list",
+    link_text="Containers",
+    permissions=["netbox_containers.view_container"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:container_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_container"],
+        ),
+    ),
+)
+
 pods = PluginMenuItem(
     link="plugins:netbox_containers:pod_list",
     link_text="Pods",
@@ -79,7 +94,7 @@ volumes = PluginMenuItem(
 menu = PluginMenu(
     label="Containers",
     groups=(
-        ("Inventory", (pods, networks, images, imagetags, volumes)),
+        ("Inventory", (containers, pods, networks, images, imagetags, volumes)),
     ),
     icon_class="mdi mdi-docker",
 )

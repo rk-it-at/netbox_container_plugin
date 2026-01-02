@@ -46,3 +46,10 @@ class VolumeViewSet(NetBoxModelViewSet):
 
     serializer_class = serializers.VolumeSerializer
     filterset_class = filtersets.VolumeFilterSet
+
+
+class ContainerViewSet(NetBoxModelViewSet):
+    queryset = models.Container.objects.all()
+
+    serializer_class = serializers.ContainerSerializer
+    filterset_class = filtersets.ContainerFilterSet

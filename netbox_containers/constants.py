@@ -12,6 +12,18 @@ class PodStatusChoices(ChoiceSet):
     ]
     colors = {v: c for v, _, c in CHOICES}
 
+class ContainerStatusChoices(ChoiceSet):
+    key = 'Container.status'
+    CHOICES = [
+        ("created",     "Created",     "grey"),
+        ("initialized", "Initialized", "grey"),
+        ("running",     "Running",     "green"),
+        ("paused",      "Paused",      "yellow"),
+        ("exited",      "Exited",      "orange"),
+        ("unknown",     "Unknown",     "red"),
+    ]
+    colors = {v: c for v, _, c in CHOICES}
+
 class NetworkDriverChoices(ChoiceSet):
     key = 'Network.driver'
     CHOICES = [

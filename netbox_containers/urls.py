@@ -16,4 +16,5 @@ urlpatterns = (
     *get_urls("image", "images"),
     *get_urls("imagetag", "imagetags"),
     *get_urls("volume", "volumes"),
+    *get_urls("container", "containers"),
 )
