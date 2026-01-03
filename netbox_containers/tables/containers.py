@@ -11,6 +11,10 @@ __all__ = (
 
 class ContainerTable(NetBoxTable):
     name = tables.Column(linkify=True)
+    image = tables.Column(
+        accessor='image_tag.full_reference',
+        verbose_name='Image',
+    )
     status = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
     published_ports = tables.Column()

@@ -14,6 +14,7 @@ class ContainerSerializer(NetBoxModelSerializer):
         model = models.Container
         fields = (
             "name",
+            "image_tag",
             "status",
             "user",
             "published_ports",

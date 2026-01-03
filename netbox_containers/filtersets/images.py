@@ -26,6 +26,7 @@ class ImageFilterSet(NetBoxModelFilterSet):
 
 class ImageTagFilterSet(NetBoxModelFilterSet):
     q = filters.CharFilter(method="search", label="Search")
+    image_id = filters.NumberFilter(field_name="image_id")
 
     class Meta:
         model = ImageTag

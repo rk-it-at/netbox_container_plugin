@@ -36,6 +36,7 @@ class ImageViewSet(NetBoxModelViewSet):
 
 class ImageTagViewSet(NetBoxModelViewSet):
     queryset = models.ImageTag.objects.all()
+    #queryset = ImageTag.objects.select_related("image").order_by("image_id", "tag", "pk")
 
     serializer_class = serializers.ImageTagSerializer
     filterset_class = filtersets.ImageTagFilterSet

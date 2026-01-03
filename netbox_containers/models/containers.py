@@ -11,6 +11,14 @@ __all__ = (
 
 class Container(NetBoxModel):
     name = models.CharField(max_length=100)
+    image_tag = models.ForeignKey(
+        'netbox_containers.ImageTag',
+        on_delete=models.PROTECT,   # prevent deleting an ImageTag in use
+        related_name='containers',
+        blank=True,
+        null=True,
+        help_text="Image + tag to run (e.g. quay.io/keycloak/keycloak:26.4)",
+    )
     status = models.CharField(
         max_length=20,
         choices=ContainerStatusChoices,
