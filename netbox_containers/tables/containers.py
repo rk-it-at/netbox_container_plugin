@@ -35,6 +35,13 @@ class ContainerTable(NetBoxTable):
         url_params={"container_containers_id": "pk"},
         orderable=False,
     )
+    command = tables.Column()
+    volumes = tables.ManyToManyColumn(linkify_item=True)
+    user_namespace = tables.Column()
+    memory_limit = tables.Column()
+    cpu_limit = tables.Column()
+    environment = tables.Column()
+    add_host = tables.Column()
 
     class Meta(NetBoxTable.Meta):
         model = Container
@@ -46,6 +53,13 @@ class ContainerTable(NetBoxTable):
             "published_ports",
             "networks",
             "pod",
+            "command",
+            "volumes",
+            "user_namespaces",
+            "memory_limit",
+            "cpu_limit",
+            "environment",
+            "add_host",
             "device_count",
             "vm_count",
             "tags"

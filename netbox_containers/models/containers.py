@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
@@ -6,6 +7,12 @@ from netbox_containers.constants import ContainerStatusChoices
 
 __all__ = (
     "Container",
+)
+
+
+memory_limit_validator = RegexValidator(
+    regex=r'^[1-9]\d*(?:[bBkKmMgG])?$',
+    message="Enter a positive number optionally followed by b, k, m, or g (e.g. 512m, 1g, 1048576).",
 )
 
 
@@ -49,6 +56,38 @@ class Container(NetBoxModel):
         related_name="container_containers",
         blank=True,
     )
+    command = models.CharField(max_length=200, blank=True, null=True)
+    volumes = models.ManyToManyField(
+        'netbox_containers.Volume',
+        related_name='containers',
+        blank=True,
+        null=True,
+    )
+    user_namespaces = models.CharField(max_length=100, blank=True, null=True)
+    memory_limit = models.CharField(
+        max_length=16,
+        blank=True,
+        validators=[memory_limit_validator],
+        help_text="Podman memory limit (number[unit]): e.g. 512m, 1g",
+    )
+    cpu_limit = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        blank=True,
+        null=True,
+        help_text="CPU limit (floating point, e.g. 0.5, 1.25)",
+    )
+    environment = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="One entry per line: KEY=VALUE (e.g. TZ=UTC)"
+    )
+    add_host = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="One entry per line: HOSTNAME:IP (e.g. db:10.0.0.10)"
+    )
+
 
     class Meta:
         verbose_name = "Container"

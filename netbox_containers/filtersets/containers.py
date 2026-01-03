@@ -41,6 +41,7 @@ class ContainerFilterSet(NetBoxModelFilterSet):
             "published_ports",
             "networks",
             "pod",
+            "volumes",
             "devices",
             "virtual_machines",
             "tag"
