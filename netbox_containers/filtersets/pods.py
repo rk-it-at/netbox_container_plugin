@@ -27,6 +27,7 @@ class PodFilterSet(NetBoxModelFilterSet):
         queryset=VirtualMachine.objects.all(),
         label="Virtual machines",
     )
+    network_id = filters.NumberFilter(method="filter_network")
 
     class Meta:
         model = Pod
@@ -36,9 +37,9 @@ class PodFilterSet(NetBoxModelFilterSet):
             "status",
             "user",
             "published_ports",
-            "networks",
             "devices",
             "virtual_machines",
+            "network_id",
             "tag"
         )
 
@@ -46,3 +47,8 @@ class PodFilterSet(NetBoxModelFilterSet):
         if not value:
             return queryset
         return queryset.filter(name__icontains=value)
+
+    def filter_network(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(network_attachments__network_id=value)

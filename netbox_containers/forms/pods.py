@@ -1,11 +1,12 @@
 from django import forms
+import json
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
-from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
+from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField, CommentField
 from utilities.forms.rendering import FieldSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
-from netbox_containers.models import Pod, Network
+from netbox_containers.models import Pod, Container
 
 
 __all__ = (
@@ -16,11 +17,6 @@ __all__ = (
 
 
 class PodForm(NetBoxModelForm):
-    networks = DynamicModelMultipleChoiceField(
-        queryset=Network.objects.all(),
-        required=False,
-        label="Networks",
-    )
     comments = CommentField(required=False)
     devices = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
@@ -32,6 +28,14 @@ class PodForm(NetBoxModelForm):
         required=False,
         label="Virtual machines",
     )
+    infra_container = DynamicModelChoiceField(
+        queryset=Container.objects.none(),
+        required=False,
+        label="Infra container",
+        query_params={
+            "is_infra": "true",
+        },
+    )
 
     class Meta:
         model = Pod
@@ -40,7 +44,7 @@ class PodForm(NetBoxModelForm):
             "status",
             "user",
             "published_ports",
-            "networks",
+            "infra_container",
             "devices",
             "virtual_machines",
             "tags",
@@ -49,6 +53,24 @@ class PodForm(NetBoxModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields["infra_container"].queryset = Container.objects.filter(
+                is_infra=True,
+                pod=self.instance,
+            )
+            params = [
+                {"queryParam": "is_infra", "queryValue": [True]},
+                {"queryParam": "pod_id", "queryValue": [self.instance.pk]},
+            ]
+            self.fields["infra_container"].query_params = {
+                "is_infra": "true",
+                "pod_id": str(self.instance.pk),
+            }
+            widget = self.fields["infra_container"].widget
+            widget.attrs["data-static-params"] = json.dumps(params)
+            widget.attrs.pop("data-dynamic-params", None)
+        else:
+            self.fields["infra_container"].queryset = Container.objects.none()
 
 
 class PodBulkEditForm(NetBoxModelBulkEditForm):
@@ -79,13 +101,6 @@ class PodFilterForm(NetBoxModelFilterSetForm):
     )
     user   = forms.CharField(required=False, label="User")
 
-    # Filter Pods by related Networks
-    networks = DynamicModelMultipleChoiceField(
-        queryset=Network.objects.all(),
-        required=False,
-        label="Networks"
-    )
-
     fieldsets = (
-        FieldSet("q", "status", "user", "networks", name=_("Pods")),
+        FieldSet("q", "status", "user", name=_("Pods")),
     )

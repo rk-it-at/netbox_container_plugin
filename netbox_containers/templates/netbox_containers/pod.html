@@ -1,4 +1,24 @@
 {% extends 'generic/object.html' %}
+{% load helpers %}
+{% load netbox_containers_helpers %}
+
+{% block extra_controls %}
+  {{ block.super }}
+  {% if perms.netbox_containers.add_networkattachment %}
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="mdi mdi-plus"></i> Add Components
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a class="dropdown-item" href="{% url 'plugins:netbox_containers:network_attachment_add_from_pod' pod_id=object.pk %}">
+            <i class="mdi mdi-lan"></i> Networks
+          </a>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="row gx-3">
@@ -33,6 +53,17 @@
           <div class="col col-md-3 text-muted">Published Ports</div>
           <div class="col col-md-9">
             {% if object.published_ports %}{{ object.published_ports }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Infra Container</div>
+          <div class="col col-md-9">
+            {% if object.infra_container %}
+              <a href="{{ object.infra_container.get_absolute_url }}">{{ object.infra_container }}</a>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
           </div>
         </div>
 
@@ -78,37 +109,25 @@
         Networks
       </h5>
       <div class="card-body">
-        {% if object.networks.exists %}
+        {% if object.network_attachments.exists %}
           <div class="table-responsive">
             <table class="table table-hover table-headings">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Subnets</th>
+                  <th>Type</th>
+                  <th>Network / Options</th>
                 </tr>
               </thead>
               <tbody>
-                {% for network in object.networks.all|dictsort:"name" %}
+                {% for att in object.network_attachments.all %}
                 <tr>
-                  <td><a href="{{ network.get_absolute_url }}">{{ network }}</a></td>
+                  <td>{{ att.get_mode_display }}</td>
                   <td>
-                    {% with prefixes=network.prefixes.all %}
-                        {% if prefixes or network.subnets_text %}
-                          {# Linked prefixes first #}
-                          {% for p in prefixes %}
-                            <a href="{{ p.get_absolute_url }}">{{ p.prefix }}</a>{% if not forloop.last or network.subnets_text %}, {% endif %}
-                          {% endfor %}
-
-                          {# Followed by free-text CIDRs (JSON list) #}
-                          {% if network.subnets_text %}
-                            {% for s in network.subnets_text %}
-                              {{ s }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                          {% endif %}
-                        {% else %}
-                          <span class="text-muted">—</span>
-                        {% endif %}
-                      {% endwith %}
+                    {% if att.network %}
+                      <a href="{{ att.network.get_absolute_url }}">{{ att.network }}</a>
+                    {% else %}
+                      {{ att.options|default:"—" }}
+                    {% endif %}
                   </td>
                 </tr>
                 {% endfor %}
@@ -117,6 +136,47 @@
           </div>
         {% else %}
           <span class="text-muted">No networks associated.</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# --- Containers panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">
+        Containers
+      </h5>
+      <div class="card-body">
+        {% if object.containers.exists %}
+          <div class="table-responsive">
+            <table class="table table-hover table-headings">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Image</th>
+                  <th>Infra</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in object.containers.all|dictsort:"name" %}
+                <tr>
+                  <td><a href="{{ c.get_absolute_url }}">{{ c }}</a></td>
+                  <td>{{ c.get_status_display|default:"—" }}</td>
+                  <td>
+                    {% if c.image_tag %}
+                      {{ c.image_tag }}
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ c.is_infra|render_boolean }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <span class="text-muted">No containers associated.</span>
         {% endif %}
       </div>
     </div>

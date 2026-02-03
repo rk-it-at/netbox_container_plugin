@@ -32,12 +32,6 @@ class Container(NetBoxModel):
     )
     user = models.CharField(max_length=100, blank=True, null=True)
     published_ports = models.CharField(max_length=200, blank=True, null=True)
-    networks = models.ManyToManyField(
-        'netbox_containers.Network',
-        related_name='containers',
-        blank=True,
-        null=True,
-    )
     pod = models.ForeignKey(
         'netbox_containers.Pod',
         on_delete=models.SET_NULL,
@@ -57,12 +51,6 @@ class Container(NetBoxModel):
         blank=True,
     )
     command = models.CharField(max_length=200, blank=True, null=True)
-    volumes = models.ManyToManyField(
-        'netbox_containers.Volume',
-        related_name='containers',
-        blank=True,
-        null=True,
-    )
     user_namespaces = models.CharField(max_length=100, blank=True, null=True)
     memory_limit = models.CharField(
         max_length=16,
@@ -86,6 +74,10 @@ class Container(NetBoxModel):
         blank=True,
         default=list,
         help_text="One entry per line: HOSTNAME:IP (e.g. db:10.0.0.10)"
+    )
+    is_infra = models.BooleanField(
+        default=False,
+        help_text="Mark this container as the infra container for a pod.",
     )
 
 

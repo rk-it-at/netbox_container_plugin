@@ -1,4 +1,5 @@
 import django_tables2 as tables
+from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Pod
 from netbox_containers.models.pods import PodStatusChoices
@@ -14,8 +15,14 @@ class PodTable(NetBoxTable):
     status = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
     published_ports = tables.Column()
-    networks = tables.ManyToManyColumn(linkify_item=True)
     tags = columns.TagColumn()
+    container_count = columns.LinkedCountColumn(
+        accessor="container_count",
+        verbose_name="Containers",
+        viewname="plugins:netbox_containers:container_list",
+        url_params={"pod_id": "pk"},
+        orderable=False,
+    )
     device_count = columns.LinkedCountColumn(
         accessor="device_count",
         verbose_name="Devices",
@@ -39,9 +46,13 @@ class PodTable(NetBoxTable):
             "status",
             "user",
             "published_ports",
-            "networks",
+            "container_count",
             "device_count",
             "vm_count",
             "tags"
         )
-        default_columns = ("name", "status", "networks", "published_ports", "device_count", "vm_count")
+        default_columns = ("name", "status", "published_ports", "container_count", "device_count", "vm_count")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(container_count=Count("containers", distinct=True))

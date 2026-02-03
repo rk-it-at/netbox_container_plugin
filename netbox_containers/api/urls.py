@@ -12,6 +12,10 @@ router.register("networks", views.NetworkViewSet)
 router.register("images", views.ImageViewSet)
 router.register("imagetags", views.ImageTagViewSet)
 router.register("volumes", views.VolumeViewSet)
-router.register("cntainers", views.ContainerViewSet)
+router.register("containers", views.ContainerViewSet)
+router.register("mounts", views.MountViewSet)
+router.register("network-attachments", views.NetworkAttachmentViewSet)
+router.register("secrets", views.SecretViewSet)
+router.register("container-secrets", views.ContainerSecretViewSet)
 
 urlpatterns = router.urls

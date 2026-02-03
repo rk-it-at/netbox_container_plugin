@@ -54,3 +54,31 @@ class ContainerViewSet(NetBoxModelViewSet):
 
     serializer_class = serializers.ContainerSerializer
     filterset_class = filtersets.ContainerFilterSet
+
+
+class MountViewSet(NetBoxModelViewSet):
+    queryset = models.Mount.objects.all()
+
+    serializer_class = serializers.MountSerializer
+    filterset_class = filtersets.MountFilterSet
+
+
+class NetworkAttachmentViewSet(NetBoxModelViewSet):
+    queryset = models.NetworkAttachment.objects.all()
+
+    serializer_class = serializers.NetworkAttachmentSerializer
+    filterset_class = filtersets.NetworkAttachmentFilterSet
+
+
+class SecretViewSet(NetBoxModelViewSet):
+    queryset = models.Secret.objects.all()
+
+    serializer_class = serializers.SecretSerializer
+    filterset_class = filtersets.SecretFilterSet
+
+
+class ContainerSecretViewSet(NetBoxModelViewSet):
+    queryset = models.ContainerSecret.objects.all()
+
+    serializer_class = serializers.ContainerSecretSerializer
+    filterset_class = filtersets.ContainerSecretFilterSet

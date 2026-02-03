@@ -1,6 +1,47 @@
 {% extends 'generic/object.html' %}
+{% load helpers %}
+{% load netbox_containers_helpers %}
+
+{% block extra_controls %}
+  {{ block.super }}
+  {% if perms.netbox_containers.add_mount %}
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="mdi mdi-plus"></i> Add Components
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a class="dropdown-item" href="{% url 'plugins:netbox_containers:mount_add_from_container' container_id=object.pk %}">
+            <i class="mdi mdi-database-plus"></i> Mounts
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="{% url 'plugins:netbox_containers:network_attachment_add_from_container' container_id=object.pk %}">
+            <i class="mdi mdi-lan"></i> Networks
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="{% url 'plugins:netbox_containers:containersecret_add_from_container' container_id=object.pk %}">
+            <i class="mdi mdi-key-variant"></i> Secrets
+          </a>
+        </li>
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+  <div class="row gx-3">
+    <div class="col-12 col-xl-6">
+      {# container fields #}
+    </div>
+    <div class="col-12 col-xl-6">
+      {# related objects etc. #}
+    </div>
+  </div>
+</div>
+
 <div class="row gx-3">
   {# ================= LEFT COLUMN ================= #}
   <div class="col-12 col-xl-6">
@@ -26,6 +67,13 @@
           <div class="col col-md-3 text-muted">Status</div>
           <div class="col col-md-9">
             {% if object.status %}{{ object.status }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Infra</div>
+          <div class="col col-md-9">
+            {{ object.is_infra|render_boolean }}
           </div>
         </div>
 
@@ -85,37 +133,25 @@
         Networks
       </h5>
       <div class="card-body">
-        {% if object.networks.exists %}
+        {% if object.network_attachments.exists %}
           <div class="table-responsive">
             <table class="table table-hover table-headings">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Subnets</th>
+                  <th>Type</th>
+                  <th>Network / Options</th>
                 </tr>
               </thead>
               <tbody>
-                {% for network in object.networks.all|dictsort:"name" %}
+                {% for att in object.network_attachments.all %}
                 <tr>
-                  <td><a href="{{ network.get_absolute_url }}">{{ network }}</a></td>
+                  <td>{{ att.get_mode_display }}</td>
                   <td>
-                    {% with prefixes=network.prefixes.all %}
-                        {% if prefixes or network.subnets_text %}
-                          {# Linked prefixes first #}
-                          {% for p in prefixes %}
-                            <a href="{{ p.get_absolute_url }}">{{ p.prefix }}</a>{% if not forloop.last or network.subnets_text %}, {% endif %}
-                          {% endfor %}
-
-                          {# Followed by free-text CIDRs (JSON list) #}
-                          {% if network.subnets_text %}
-                            {% for s in network.subnets_text %}
-                              {{ s }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                          {% endif %}
-                        {% else %}
-                          <span class="text-muted">—</span>
-                        {% endif %}
-                      {% endwith %}
+                    {% if att.network %}
+                      <a href="{{ att.network.get_absolute_url }}">{{ att.network }}</a>
+                    {% else %}
+                      {{ att.options|default:"—" }}
+                    {% endif %}
                   </td>
                 </tr>
                 {% endfor %}

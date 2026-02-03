@@ -46,6 +46,66 @@ networks = PluginMenuItem(
     ),
 )
 
+container_networks = PluginMenuItem(
+    link="plugins:netbox_containers:networkattachment_container_list",
+    link_text="Networks",
+    permissions=["netbox_containers.view_networkattachment"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:networkattachment_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_networkattachment"],
+        ),
+    ),
+)
+
+pod_networks = PluginMenuItem(
+    link="plugins:netbox_containers:networkattachment_pod_list",
+    link_text="Networks",
+    permissions=["netbox_containers.view_networkattachment"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:networkattachment_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_networkattachment"],
+        ),
+    ),
+)
+
+mounts = PluginMenuItem(
+    link="plugins:netbox_containers:mount_list",
+    link_text="Mounts",
+    permissions=["netbox_containers.view_mount"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:mount_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_mount"],
+        ),
+    ),
+)
+
+container_secrets = PluginMenuItem(
+    link="plugins:netbox_containers:containersecret_list",
+    link_text="Secrets",
+    permissions=["netbox_containers.view_containersecret"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:containersecret_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_containersecret"],
+        ),
+    ),
+)
+
 images = PluginMenuItem(
     link="plugins:netbox_containers:image_list",
     link_text="Images",
@@ -91,10 +151,27 @@ volumes = PluginMenuItem(
     ),
 )
 
+secrets = PluginMenuItem(
+    link="plugins:netbox_containers:secret_list",
+    link_text="Secrets",
+    permissions=["netbox_containers.view_secret"],
+    buttons=(
+        PluginMenuButton(
+            link="plugins:netbox_containers:secret_add",
+            title="Add",
+            icon_class="mdi mdi-plus",
+            color=ButtonColorChoices.GREEN,
+            permissions=["netbox_containers.add_secret"],
+        ),
+    ),
+)
+
 menu = PluginMenu(
     label="Containers",
     groups=(
-        ("Inventory", (containers, pods, networks, images, imagetags, volumes)),
+        ("Containers", (containers, container_networks, mounts, container_secrets)),
+        ("Pods", (pods, pod_networks)),
+        ("Infra", (networks, images, imagetags, volumes, secrets)),
     ),
     icon_class="mdi mdi-docker",
 )

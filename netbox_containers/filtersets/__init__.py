@@ -3,3 +3,7 @@ from .pods import *
 from .images import *
 from .volumes import *
 from .containers import *
+from .mounts import *
+from .network_attachments import *
+from .secrets import *
+from .container_secrets import *

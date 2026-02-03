@@ -1,0 +1,46 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row gx-3">
+    <div class="col-12 col-xl-6">
+      <div class="card mb-3">
+        <h5 class="card-header">Mount</h5>
+        <div class="card-body">
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Container</div>
+            <div class="col col-md-8">
+              <a href="{{ object.container.get_absolute_url }}">{{ object.container }}</a>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Type</div>
+            <div class="col col-md-8">{{ object.mount_type }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Source</div>
+            <div class="col col-md-8">
+              {% if object.volume %}
+                <a href="{{ object.volume.get_absolute_url }}">{{ object.volume }}</a>
+              {% else %}
+                {{ object.host_path }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Destination</div>
+            <div class="col col-md-8">{{ object.dest_path }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Options</div>
+            <div class="col col-md-8">
+              {% if object.options %}{{ object.options }}{% else %}<span class="text-muted">—</span>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

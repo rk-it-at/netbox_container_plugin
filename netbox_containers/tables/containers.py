@@ -1,4 +1,5 @@
 import django_tables2 as tables
+from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Container
 from netbox_containers.models.containers import ContainerStatusChoices
@@ -18,7 +19,6 @@ class ContainerTable(NetBoxTable):
     status = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
     published_ports = tables.Column()
-    networks = tables.ManyToManyColumn(linkify_item=True)
     pod = tables.Column(linkify=True)
     tags = columns.TagColumn()
     device_count = columns.LinkedCountColumn(
@@ -36,12 +36,12 @@ class ContainerTable(NetBoxTable):
         orderable=False,
     )
     command = tables.Column()
-    volumes = tables.ManyToManyColumn(linkify_item=True)
     user_namespace = tables.Column()
     memory_limit = tables.Column()
     cpu_limit = tables.Column()
     environment = tables.Column()
     add_host = tables.Column()
+    is_infra = columns.BooleanColumn(verbose_name="Infra")
 
     class Meta(NetBoxTable.Meta):
         model = Container
@@ -51,17 +51,24 @@ class ContainerTable(NetBoxTable):
             "status",
             "user",
             "published_ports",
-            "networks",
             "pod",
             "command",
-            "volumes",
             "user_namespaces",
             "memory_limit",
             "cpu_limit",
             "environment",
             "add_host",
+            "is_infra",
             "device_count",
             "vm_count",
             "tags"
         )
-        default_columns = ("name", "status", "pod", "published_ports", "device_count", "vm_count")
+        default_columns = ("name", "status", "pod", "is_infra", "published_ports", "device_count", "vm_count")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return (
+            qs
+            .annotate(device_count=Count("devices", distinct=True))
+            .annotate(vm_count=Count("virtual_machines", distinct=True))
+        )

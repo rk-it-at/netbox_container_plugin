@@ -17,7 +17,7 @@ class PodSerializer(NetBoxModelSerializer):
             "status",
             "user",
             "published_ports",
-            "networks",
+            "infra_container",
             "devices",
             "virtual_machines",
             "id",

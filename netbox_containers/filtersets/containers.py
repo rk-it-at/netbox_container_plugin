@@ -30,6 +30,9 @@ class ContainerFilterSet(NetBoxModelFilterSet):
     pod = filters.ModelChoiceFilter(
         queryset=Pod.objects.all()
     )
+    pod_id = filters.NumberFilter(field_name="pod_id")
+    network_id = filters.NumberFilter(method="filter_network")
+    is_infra = filters.BooleanFilter()
 
     class Meta:
         model = Container
@@ -39,9 +42,10 @@ class ContainerFilterSet(NetBoxModelFilterSet):
             "status",
             "user",
             "published_ports",
-            "networks",
             "pod",
-            "volumes",
+            "pod_id",
+            "is_infra",
+            "network_id",
             "devices",
             "virtual_machines",
             "tag"
@@ -51,3 +55,8 @@ class ContainerFilterSet(NetBoxModelFilterSet):
         if not value:
             return queryset
         return queryset.filter(name__icontains=value)
+
+    def filter_network(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(network_attachments__network_id=value)

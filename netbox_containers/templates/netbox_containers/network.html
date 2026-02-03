@@ -105,7 +105,7 @@
         Pods
       </h5>
       <div class="card-body">
-        {% if object.pods.exists %}
+        {% if pod_attachments %}
           <div class="table-responsive">
             <table class="table table-hover table-headings">
               <thead>
@@ -116,18 +116,61 @@
                 </tr>
               </thead>
               <tbody>
-                {% for pod in object.pods.all|dictsort:"name" %}
+                {% for att in pod_attachments %}
+                {% with pod=att.pod %}
                 <tr>
                   <td><a href="{{ pod.get_absolute_url }}">{{ pod }}</a></td>
                   <td>{{ pod.user|default:"—" }}</td>
                   <td>{{ pod.get_status_display|default:"—" }}</td>
                 </tr>
+                {% endwith %}
                 {% endfor %}
               </tbody>
             </table>
           </div>
         {% else %}
           <span class="text-muted">No pods associated.</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# --- Containers panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">
+        Containers
+      </h5>
+      <div class="card-body">
+        {% if container_attachments %}
+          <div class="table-responsive">
+            <table class="table table-hover table-headings">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Pod</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for att in container_attachments %}
+                {% with c=att.container %}
+                <tr>
+                  <td><a href="{{ c.get_absolute_url }}">{{ c }}</a></td>
+                  <td>{{ c.get_status_display|default:"—" }}</td>
+                  <td>
+                    {% if c.pod %}
+                      <a href="{{ c.pod.get_absolute_url }}">{{ c.pod }}</a>
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endwith %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <span class="text-muted">No containers associated.</span>
         {% endif %}
       </div>
     </div>

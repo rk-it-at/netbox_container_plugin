@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from django.db.models import Count
+from django.db.models import Count, Q
 from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Network
 from netbox_containers.models.networks import NetworkDriverChoices
@@ -17,8 +17,15 @@ class NetworkTable(NetBoxTable):
     pod_count = columns.LinkedCountColumn(
         accessor='pod_count',
         viewname='plugins:netbox_containers:pod_list',
-        url_params={'networks_id': 'pk'},
+        url_params={'network_id': 'pk'},
         verbose_name="Pods",
+        orderable=False,
+    )
+    container_count = columns.LinkedCountColumn(
+        accessor="container_count",
+        verbose_name="Containers",
+        viewname="plugins:netbox_containers:container_list",
+        url_params={"network_id": "pk"},
         orderable=False,
     )
     device_count = columns.LinkedCountColumn(
@@ -62,6 +69,7 @@ class NetworkTable(NetBoxTable):
             'driver',
             'user',
             "pod_count",
+            "container_count",
             "device_count",
             "vm_count",
             "subnets",
@@ -70,13 +78,15 @@ class NetworkTable(NetBoxTable):
             "tags"
         )
         default_columns = (
-            'name', 'user', 'subnets', 'device_count', 'vm_count', 'label'
+            'name', 'user', 'subnets', 'pod_count', 'container_count', 'device_count', 'vm_count', 'label'
         )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return (
             qs
+            .annotate(pod_count=Count("attachments__pod", filter=Q(attachments__pod__isnull=False), distinct=True))
+            .annotate(container_count=Count("attachments__container", filter=Q(attachments__container__isnull=False), distinct=True))
             .annotate(device_count=Count("devices", distinct=True))
             .annotate(vm_count=Count("virtual_machines", distinct=True))
         )

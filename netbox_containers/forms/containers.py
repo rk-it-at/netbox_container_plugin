@@ -7,7 +7,7 @@ from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultiple
 from utilities.forms.rendering import FieldSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
-from netbox_containers.models import Container, Pod, Network, Image, ImageTag, Volume
+from netbox_containers.models import Container, Pod, Image, ImageTag, Volume
 import re
 
 
@@ -28,11 +28,6 @@ ENV_ENTRY_RE  = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=.*$")  # KEY=VALUE
 
 
 class ContainerForm(NetBoxModelForm):
-    networks = DynamicModelMultipleChoiceField(
-        queryset=Network.objects.all(),
-        required=False,
-        label="Networks",
-    )
     pod = DynamicModelChoiceField(
         queryset=Pod.objects.all(),
         required=False,
@@ -64,11 +59,6 @@ class ContainerForm(NetBoxModelForm):
             "image_id": "$image",
         },
     )
-    volumes = DynamicModelMultipleChoiceField(
-        queryset=Volume.objects.all(),
-        required=False,
-        label="Volumes",
-    )
     add_host_text = forms.CharField(
         required=False,
         label="Add hosts",
@@ -89,12 +79,11 @@ class ContainerForm(NetBoxModelForm):
             "status",
             "user",
             "published_ports",
-            "networks",
             "pod",
+            "is_infra",
             "image",
             "image_tag",
             "command",
-            "volumes",
             "user_namespaces",
             "memory_limit",
             "cpu_limit",
@@ -210,11 +199,6 @@ class ContainerFilterForm(NetBoxModelFilterSetForm):
     user   = forms.CharField(required=False, label="User")
 
     # Filter Containers by related Networks
-    networks = DynamicModelMultipleChoiceField(
-        queryset=Network.objects.all(),
-        required=False,
-        label="Networks"
-    )
     pod = DynamicModelChoiceField(
         queryset=Pod.objects.all(),
         required=False,
@@ -222,5 +206,5 @@ class ContainerFilterForm(NetBoxModelFilterSetForm):
     )
 
     fieldsets = (
-        FieldSet("q", "status", "user", "networks", "pod", name=_("Containers")),
+        FieldSet("q", "status", "user", "pod", name=_("Containers")),
     )
