@@ -32,6 +32,11 @@ class Pod(NetBoxModel):
         related_name="container_pods",
         blank=True,
     )
+    add_host = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="One entry per line: HOSTNAME:IP (e.g. db:10.0.0.10)",
+    )
     infra_container = models.ForeignKey(
         "netbox_containers.Container",
         on_delete=models.SET_NULL,

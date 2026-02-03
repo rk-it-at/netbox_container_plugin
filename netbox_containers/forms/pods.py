@@ -1,5 +1,6 @@
 from django import forms
 import json
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
 from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField, CommentField
@@ -7,6 +8,7 @@ from utilities.forms.rendering import FieldSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
 from netbox_containers.models import Pod, Container
+from netbox_containers.forms.containers import HOST_ENTRY_RE
 
 
 __all__ = (
@@ -23,6 +25,12 @@ class PodForm(NetBoxModelForm):
         label="Published Ports",
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One mapping per line: host_port:container_port (e.g. 8080:80).",
+    )
+    add_host_text = forms.CharField(
+        required=False,
+        label="Add hosts",
+        widget=forms.Textarea(attrs={"rows": 4}),
+        help_text="One per line: hostname:ip (maps to --add-host).",
     )
     devices = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
@@ -51,6 +59,7 @@ class PodForm(NetBoxModelForm):
             "user",
             "published_ports",
             "infra_container",
+            "add_host_text",
             "devices",
             "virtual_machines",
             "tags",
@@ -75,8 +84,30 @@ class PodForm(NetBoxModelForm):
             widget = self.fields["infra_container"].widget
             widget.attrs["data-static-params"] = json.dumps(params)
             widget.attrs.pop("data-dynamic-params", None)
+            self.initial["add_host_text"] = "\n".join(self.instance.add_host or [])
         else:
             self.fields["infra_container"].queryset = Container.objects.none()
+
+    def clean_add_host_text(self):
+        raw = (self.cleaned_data.get("add_host_text") or "").strip()
+        if not raw:
+            return []
+        lines = [l.strip() for l in raw.splitlines() if l.strip()]
+        bad = [l for l in lines if not HOST_ENTRY_RE.match(l)]
+        if bad:
+            raise ValidationError(
+                "Invalid add-host entry. Use one per line in the form hostname:ip. "
+                f"Bad entries: {', '.join(bad[:5])}"
+            )
+        return lines
+
+    def save(self, commit=True):
+        obj = super().save(commit=False)
+        obj.add_host = self.cleaned_data.get("add_host_text", [])
+        if commit:
+            obj.save()
+            self.save_m2m()
+        return obj
 
 
 class PodBulkEditForm(NetBoxModelBulkEditForm):

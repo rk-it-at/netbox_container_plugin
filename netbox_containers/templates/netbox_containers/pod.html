@@ -61,6 +61,18 @@
         </div>
 
         <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Add Host</div>
+          <div class="col col-md-9">
+            {% if object.add_host %}
+              <pre class="mb-0">{% for item in object.add_host %}{{ item }}{% if not forloop.last %}
+{% endif %}{% endfor %}</pre>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
           <div class="col col-md-3 text-muted">Infra Container</div>
           <div class="col col-md-9">
             {% if object.infra_container %}
