@@ -60,12 +60,3 @@ class VolumeBulkDeleteView(generic.BulkDeleteView):
     table = tables.VolumeTable
     filterset = filtersets.VolumeFilterSet
 
-
-@register_model_view(models.Volume, "changelog", path="changelog")
-class VolumeChangeLogView(generic.ObjectChangeLogView):
-    queryset = models.Volume.objects.all()
-
-
-@register_model_view(models.Volume, "journal", path="journal")
-class VolumeJournalView(generic.ObjectJournalView):
-    queryset = models.Volume.objects.all()

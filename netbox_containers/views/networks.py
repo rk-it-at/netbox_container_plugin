@@ -71,12 +71,3 @@ class NetworkBulkDeleteView(generic.BulkDeleteView):
     table = tables.NetworkTable
     filterset = filtersets.NetworkFilterSet
 
-
-@register_model_view(models.Network, "changelog", path="changelog")
-class NetworkChangeLogView(generic.ObjectChangeLogView):
-    queryset = models.Network.objects.all()
-
-
-@register_model_view(models.Network, "journal", path="journal")
-class NetworkJournalView(generic.ObjectJournalView):
-    queryset = models.Network.objects.all()

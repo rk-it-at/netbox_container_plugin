@@ -83,14 +83,6 @@ class PodBulkDeleteView(generic.BulkDeleteView):
     filterset = filtersets.PodFilterSet
 
 
-@register_model_view(models.Pod, "changelog", path="changelog")
-class PodChangeLogView(generic.ObjectChangeLogView):
-    queryset = models.Pod.objects.all()
-
-
-@register_model_view(models.Pod, "journal", path="journal")
-class PodJournalView(generic.ObjectJournalView):
-    queryset = models.Pod.objects.all()
 
 
 @register_model_view(models.Pod, name="network_attachments", path="network-attachments")

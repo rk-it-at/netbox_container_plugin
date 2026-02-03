@@ -59,14 +59,6 @@ class ImageBulkDeleteView(generic.BulkDeleteView):
     filterset = filtersets.ImageFilterSet
 
 
-@register_model_view(models.Image, "changelog", path="changelog")
-class ImageChangeLogView(generic.ObjectChangeLogView):
-    queryset = models.Image.objects.all()
-
-
-@register_model_view(models.Image, "journal", path="journal")
-class ImageJournalView(generic.ObjectJournalView):
-    queryset = models.Image.objects.all()
 
 # Image Tags
 
@@ -113,12 +105,3 @@ class ImageTagDeleteView(generic.ObjectDeleteView):
 #    table = tables.ImageTagTable
 #    filterset = filtersets.ImageTagFilterSet
 
-
-@register_model_view(models.ImageTag, "changelog", path="changelog")
-class ImageTagChangeLogView(generic.ObjectChangeLogView):
-    queryset = models.ImageTag.objects.all()
-
-
-@register_model_view(models.ImageTag, "journal", path="journal")
-class ImageTagJournalView(generic.ObjectJournalView):
-    queryset = models.ImageTag.objects.all()

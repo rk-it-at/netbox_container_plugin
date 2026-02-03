@@ -110,14 +110,6 @@ class ContainerBulkDeleteView(generic.BulkDeleteView):
     filterset = filtersets.ContainerFilterSet
 
 
-@register_model_view(models.Container, "changelog", path="changelog")
-class ContainerChangeLogView(generic.ObjectChangeLogView):
-    queryset = models.Container.objects.all()
-
-
-@register_model_view(models.Container, "journal", path="journal")
-class ContainerJournalView(generic.ObjectJournalView):
-    queryset = models.Container.objects.all()
 
 
 @register_model_view(models.Container, name="mounts", path="mounts")
