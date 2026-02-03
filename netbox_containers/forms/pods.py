@@ -18,6 +18,12 @@ __all__ = (
 
 class PodForm(NetBoxModelForm):
     comments = CommentField(required=False)
+    published_ports = forms.CharField(
+        required=False,
+        label="Published Ports",
+        widget=forms.Textarea(attrs={"rows": 4}),
+        help_text="One mapping per line: host_port:container_port (e.g. 8080:80).",
+    )
     devices = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required=False,

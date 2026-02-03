@@ -31,7 +31,10 @@ class Container(NetBoxModel):
         choices=ContainerStatusChoices,
     )
     user = models.CharField(max_length=100, blank=True, null=True)
-    published_ports = models.CharField(max_length=200, blank=True, null=True)
+    published_ports = models.TextField(
+        blank=True,
+        help_text="One mapping per line: host_port:container_port (e.g. 8080:80).",
+    )
     pod = models.ForeignKey(
         'netbox_containers.Pod',
         on_delete=models.SET_NULL,

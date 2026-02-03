@@ -33,6 +33,12 @@ class ContainerForm(NetBoxModelForm):
         required=False,
         label="Pod",
     )
+    published_ports = forms.CharField(
+        required=False,
+        label="Published Ports",
+        widget=forms.Textarea(attrs={"rows": 4}),
+        help_text="One mapping per line: host_port:container_port (e.g. 8080:80).",
+    )
     comments = CommentField(required=False)
     devices = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),

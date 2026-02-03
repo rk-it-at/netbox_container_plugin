@@ -52,7 +52,11 @@
         <div class="row mb-2">
           <div class="col col-md-3 text-muted">Published Ports</div>
           <div class="col col-md-9">
-            {% if object.published_ports %}{{ object.published_ports }}{% else %}<span class="text-muted">—</span>{% endif %}
+            {% if object.published_ports %}
+              <div style="white-space:pre-wrap;">{{ object.published_ports }}</div>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
           </div>
         </div>
 
