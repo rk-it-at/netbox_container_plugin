@@ -28,9 +28,13 @@
         </div>
 
         <div class="row mb-2">
-          <div class="col col-md-3 text-muted">Label</div>
+          <div class="col col-md-3 text-muted">Comments</div>
           <div class="col col-md-9">
-            {% if object.label %}{{ object.label }}{% else %}<span class="text-muted">—</span>{% endif %}
+            {% if object.comments %}
+              <div style="white-space:pre-wrap;">{{ object.comments }}</div>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
           </div>
         </div>
 
@@ -38,7 +42,7 @@
     </div>
 
     {# --- Tags panel --- #}
-    <div class="card mb-3">
+    <div class="card">
       <h5 class="card-header">Tags</h5>
       <div class="card-body">
         {% if object.tags.count %}
@@ -50,18 +54,6 @@
           </div>
         {% else %}
           <span class="text-muted">No tags</span>
-        {% endif %}
-      </div>
-    </div>
-
-    {# --- Comments panel --- #}
-    <div class="card">
-      <h5 class="card-header">Comments</h5>
-      <div class="card-body">
-        {% if object.comments %}
-          <div style="white-space:pre-wrap;">{{ object.comments }}</div>
-        {% else %}
-          <span class="text-muted">No comments</span>
         {% endif %}
       </div>
     </div>

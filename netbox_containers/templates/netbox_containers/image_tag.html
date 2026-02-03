@@ -6,38 +6,46 @@
   <div class="row gx-3">
     <div class="col-12 col-xl-6">
       <div class="card mb-3">
-        <h5 class="card-header">Network Attachment</h5>
+        <h5 class="card-header">Image Tag</h5>
         <div class="card-body">
           <div class="row mb-2">
-            <div class="col col-md-4 text-muted">Target</div>
+            <div class="col col-md-4 text-muted">Image</div>
             <div class="col col-md-8">
-              {% if object.container %}
-                <a href="{{ object.container.get_absolute_url }}">{{ object.container }}</a>
-              {% elif object.pod %}
-                <a href="{{ object.pod.get_absolute_url }}">{{ object.pod }}</a>
+              {% if object.image %}
+                <a href="{{ object.image.get_absolute_url }}">{{ object.image }}</a>
               {% else %}
                 <span class="text-muted">—</span>
               {% endif %}
             </div>
           </div>
           <div class="row mb-2">
-            <div class="col col-md-4 text-muted">Mode</div>
-            <div class="col col-md-8">{{ object.get_mode_display }}</div>
+            <div class="col col-md-4 text-muted">Tag</div>
+            <div class="col col-md-8">{{ object.image_tag }}</div>
           </div>
           <div class="row mb-2">
-            <div class="col col-md-4 text-muted">Network</div>
+            <div class="col col-md-4 text-muted">OS</div>
+            <div class="col col-md-8">{{ object.get_os_display|default:"—" }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Arch</div>
+            <div class="col col-md-8">{{ object.get_arch_display|default:"—" }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Digest</div>
+            <div class="col col-md-8">{{ object.digest|default:"—" }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Size</div>
+            <div class="col col-md-8">{{ object.size|default:"—" }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col col-md-4 text-muted">Comments</div>
             <div class="col col-md-8">
-              {% if object.network %}
-                <a href="{{ object.network.get_absolute_url }}">{{ object.network }}</a>
+              {% if object.comments %}
+                <div style="white-space:pre-wrap;">{{ object.comments }}</div>
               {% else %}
                 <span class="text-muted">—</span>
               {% endif %}
-            </div>
-          </div>
-          <div class="row mb-2">
-            <div class="col col-md-4 text-muted">Options</div>
-            <div class="col col-md-8">
-              {% if object.options %}{{ object.options }}{% else %}<span class="text-muted">—</span>{% endif %}
             </div>
           </div>
         </div>

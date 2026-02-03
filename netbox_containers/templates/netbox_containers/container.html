@@ -78,6 +78,45 @@
         </div>
 
         <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Image</div>
+          <div class="col col-md-9">
+            {% if object.image_tag %}
+              {{ object.image_tag }}
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Command</div>
+          <div class="col col-md-9">
+            {% if object.command %}{{ object.command }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">User NS</div>
+          <div class="col col-md-9">
+            {% if object.user_namespaces %}{{ object.user_namespaces }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">Memory Limit</div>
+          <div class="col col-md-9">
+            {% if object.memory_limit %}{{ object.memory_limit }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <div class="col col-md-3 text-muted">CPU Limit</div>
+          <div class="col col-md-9">
+            {% if object.cpu_limit %}{{ object.cpu_limit }}{% else %}<span class="text-muted">—</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="row mb-2">
           <div class="col col-md-3 text-muted">Published Ports</div>
           <div class="col col-md-9">
             {% if object.published_ports %}{{ object.published_ports }}{% else %}<span class="text-muted">—</span>{% endif %}
@@ -91,6 +130,32 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    {# --- Environment panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">Environment</h5>
+      <div class="card-body">
+        {% if object.environment %}
+          <pre class="mb-0">{% for item in object.environment %}{{ item }}{% if not forloop.last %}
+{% endif %}{% endfor %}</pre>
+        {% else %}
+          <span class="text-muted">—</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {# --- Add host panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">Add Host</h5>
+      <div class="card-body">
+        {% if object.add_host %}
+          <pre class="mb-0">{% for item in object.add_host %}{{ item }}{% if not forloop.last %}
+{% endif %}{% endfor %}</pre>
+        {% else %}
+          <span class="text-muted">—</span>
+        {% endif %}
       </div>
     </div>
 
