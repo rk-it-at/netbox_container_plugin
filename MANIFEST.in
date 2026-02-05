@@ -1,0 +1,3 @@
+recursive-include netbox_containers/templates *
+recursive-include netbox_containers/migrations *
+include README.md LICENSE

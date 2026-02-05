@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netbox-containers"
+version = "0.1.0"
+description = "NetBox plugin to manage Podman/Docker container environments"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+authors = [
+    { name = "René Koch", email = "rkoch@rk-it.at" }
+]
+requires-python = ">=3.12.0"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/rk-it-at/netbox-containers"
+
+[tool.setuptools.packages.find]
+include = ["netbox_containers*"]
+
+[tool.setuptools.package-data]
+"*" = ["templates/**/*.html", "static/**/*", "*.txt"]

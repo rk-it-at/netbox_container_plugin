@@ -15,7 +15,7 @@ It will support Podman and Docker - other container engines aren't supported, by
 - Secrets (driver + options)
 
 ## Requirements
-- NetBox 4.4.x (or newer)
+- NetBox 4.4.x–4.5.x
 - Python 3.12 (or newer)
 
 ## Installation (dev)
