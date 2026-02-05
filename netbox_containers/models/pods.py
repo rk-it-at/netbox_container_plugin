@@ -64,5 +64,8 @@ class Pod(NetBoxModel):
     def get_pod_status_color(self):
         return PodStatusChoices.colors.get(self.status)
 
+    def get_status_color(self):
+        return PodStatusChoices.colors.get(self.status)
+
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:pod", args=[self.pk])

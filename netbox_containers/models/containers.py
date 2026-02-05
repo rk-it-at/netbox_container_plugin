@@ -95,5 +95,8 @@ class Container(NetBoxModel):
     def get_container_status_color(self):
         return ContainerStatusChoices.colors.get(self.status)
 
+    def get_status_color(self):
+        return ContainerStatusChoices.colors.get(self.status)
+
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:container", args=[self.pk])

@@ -4,7 +4,7 @@ from utilities.choices import ChoiceSet
 class PodStatusChoices(ChoiceSet):
     key = 'Pod.status'
     CHOICES = [
-        ("created", "Created", "grey"),
+        ("created", "Created", "gray"),
         ("running", "Running", "green"),
         ("stopped", "Stopped", "yellow"),
         ("exited",  "Exited",  "orange"),
@@ -15,8 +15,8 @@ class PodStatusChoices(ChoiceSet):
 class ContainerStatusChoices(ChoiceSet):
     key = 'Container.status'
     CHOICES = [
-        ("created",     "Created",     "grey"),
-        ("initialized", "Initialized", "grey"),
+        ("created",     "Created",     "gray"),
+        ("initialized", "Initialized", "gray"),
         ("running",     "Running",     "green"),
         ("paused",      "Paused",      "yellow"),
         ("exited",      "Exited",      "orange"),
