@@ -83,6 +83,11 @@ class Container(NetBoxModel):
         default=list,
         help_text="One group per line: group name or gid (maps to --add-group).",
     )
+    add_device = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="One device per line (maps to --device), e.g. /dev/ttyUSB0 or /dev/sda:/dev/xvda:rwm.",
+    )
     is_infra = models.BooleanField(
         default=False,
         help_text="Mark this container as the infra container for a pod.",

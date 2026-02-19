@@ -27,6 +27,7 @@ class ContainerSerializer(NetBoxModelSerializer):
             "environment",
             "add_host",
             "add_group",
+            "add_device",
             "devices",
             "virtual_machines",
             "id",
