@@ -78,6 +78,11 @@ class Container(NetBoxModel):
         default=list,
         help_text="One entry per line: HOSTNAME:IP (e.g. db:10.0.0.10)"
     )
+    add_group = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="One group per line: group name or gid (maps to --add-group).",
+    )
     is_infra = models.BooleanField(
         default=False,
         help_text="Mark this container as the infra container for a pod.",

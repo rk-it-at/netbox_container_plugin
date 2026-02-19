@@ -26,6 +26,7 @@ class ContainerSerializer(NetBoxModelSerializer):
             "cpu_limit",
             "environment",
             "add_host",
+            "add_group",
             "devices",
             "virtual_machines",
             "id",

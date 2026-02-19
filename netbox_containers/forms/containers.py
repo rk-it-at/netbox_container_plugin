@@ -25,6 +25,7 @@ memory_limit_validator = RegexValidator(
 
 HOST_ENTRY_RE = re.compile(r"^[^:\s]+:[^:\s]+$")     # hostname:ip (simple)
 ENV_ENTRY_RE  = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=.*$")  # KEY=VALUE
+GROUP_ENTRY_RE = re.compile(r"^[^\s]+$")
 
 
 class ContainerForm(NetBoxModelForm):
@@ -71,6 +72,12 @@ class ContainerForm(NetBoxModelForm):
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One per line: hostname:ip (maps to --add-host).",
     )
+    add_group_text = forms.CharField(
+        required=False,
+        label="Add groups",
+        widget=forms.Textarea(attrs={"rows": 4}),
+        help_text="One per line: group name or gid (maps to --add-group).",
+    )
     environment_text = forms.CharField(
         required=False,
         label="Environment variables",
@@ -95,6 +102,7 @@ class ContainerForm(NetBoxModelForm):
             "cpu_limit",
             "environment_text",
             "add_host_text",
+            "add_group_text",
             "devices",
             "virtual_machines",
             "tags",
@@ -108,6 +116,7 @@ class ContainerForm(NetBoxModelForm):
 
         if self.instance.pk:
             self.initial["add_host_text"] = "\n".join(self.instance.add_host or [])
+            self.initial["add_group_text"] = "\n".join(self.instance.add_group or [])
             self.initial["environment_text"] = "\n".join(self.instance.environment or [])
 
         # Editing existing container → prepopulate
@@ -155,6 +164,20 @@ class ContainerForm(NetBoxModelForm):
             )
         return lines
 
+    def clean_add_group_text(self):
+        raw = (self.cleaned_data.get("add_group_text") or "").strip()
+        if not raw:
+            return []
+
+        lines = [l.strip() for l in raw.splitlines() if l.strip()]
+        bad = [l for l in lines if not GROUP_ENTRY_RE.match(l)]
+        if bad:
+            raise ValidationError(
+                "Invalid add-group entry. Use one group name or gid per line. "
+                f"Bad entries: {', '.join(bad[:5])}"
+            )
+        return lines
+
     def clean(self):
         super().clean()
 
@@ -169,6 +192,7 @@ class ContainerForm(NetBoxModelForm):
     def save(self, commit=True):
         obj = super().save(commit=False)
         obj.add_host = self.cleaned_data.get("add_host_text", [])
+        obj.add_group = self.cleaned_data.get("add_group_text", [])
         obj.environment = self.cleaned_data.get("environment_text", [])
         if commit:
             obj.save()
