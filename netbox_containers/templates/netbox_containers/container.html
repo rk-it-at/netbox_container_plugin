@@ -176,6 +176,19 @@
       </div>
     </div>
 
+    {# --- Add device panel --- #}
+    <div class="card mb-3">
+      <h5 class="card-header">Add Device</h5>
+      <div class="card-body">
+        {% if object.add_device %}
+          <pre class="mb-0">{% for item in object.add_device %}{{ item }}{% if not forloop.last %}
+{% endif %}{% endfor %}</pre>
+        {% else %}
+          <span class="text-muted">—</span>
+        {% endif %}
+      </div>
+    </div>
+
     {# --- Tags panel --- #}
     <div class="card mb-3">
       <h5 class="card-header">Tags</h5>

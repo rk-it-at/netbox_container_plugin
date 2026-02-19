@@ -1,0 +1,6 @@
+---
+
+enhancement:
+  - "Add support for container device redirection (https://github.com/rk-it-at/netbox_container_plugin/issues/6)"
+
+...
