@@ -51,6 +51,7 @@ It will support Podman and Docker - other container engines aren't supported, by
 ## Development notes
 - Migrations live in `netbox_containers/migrations/`
 - If you’re copying files to a remote NetBox server, restart NetBox after each change.
+- See [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution workflow, required changelog fragments, and PR expectations.
 
 ## License
-See `LICENSE`.
+See [`LICENSE`](LICENSE).
