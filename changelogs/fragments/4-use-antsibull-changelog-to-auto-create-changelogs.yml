@@ -1,0 +1,6 @@
+---
+
+minor_changes:
+  - "Use antsibull-changelog to auto-create changelogs (https://github.com/rk-it-at/netbox_container_plugin/issues/4)"
+
+...
