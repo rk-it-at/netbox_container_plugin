@@ -41,6 +41,7 @@ class ContainerTable(NetBoxTable):
     cpu_limit = tables.Column()
     environment = tables.Column()
     add_host = tables.Column()
+    add_group = tables.Column()
     is_infra = columns.BooleanColumn(verbose_name="Infra")
 
     class Meta(NetBoxTable.Meta):
@@ -58,6 +59,7 @@ class ContainerTable(NetBoxTable):
             "cpu_limit",
             "environment",
             "add_host",
+            "add_group",
             "is_infra",
             "device_count",
             "vm_count",
