@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/rk-it-at/netbox_container_plugin/blob/main/README.md
+    about: Read setup, usage, and development notes.
+  - name: Contributing guide
+    url: https://github.com/rk-it-at/netbox_container_plugin/blob/main/CONTRIBUTING.md
+    about: Review contribution requirements before opening a PR.
+

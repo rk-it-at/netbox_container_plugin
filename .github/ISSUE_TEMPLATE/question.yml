@@ -1,0 +1,28 @@
+name: Question
+description: Ask a usage or design question
+title: "[Question]: "
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: Describe what you want to understand.
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you already tried
+      description: Include commands, config, or docs checked.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Environment/context
+      placeholder: "NetBox version, plugin version, setup details"
+    validations:
+      required: false
+
