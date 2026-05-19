@@ -1,5 +1,13 @@
 # NetBox Containers Plugin
 
+[![Release](https://img.shields.io/github/v/release/rk-it-at/netbox_container_plugin)](https://github.com/rk-it-at/netbox_container_plugin/releases)
+[![License](https://img.shields.io/github/license/rk-it-at/netbox_container_plugin)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/rk-it-at/netbox_container_plugin/validate.yml?branch=main&label=ci)](https://github.com/rk-it-at/netbox_container_plugin/actions/workflows/validate.yml)
+[![Docs](https://img.shields.io/github/actions/workflow/status/rk-it-at/netbox_container_plugin/docs-pages.yml?branch=main&label=docs)](https://github.com/rk-it-at/netbox_container_plugin/actions/workflows/docs-pages.yml)
+[![PyPI](https://img.shields.io/pypi/v/netbox-containers)](https://pypi.org/project/netbox-containers/)
+[![Python](https://img.shields.io/pypi/pyversions/netbox-containers)](https://pypi.org/project/netbox-containers/)
+[![NetBox](https://img.shields.io/badge/NetBox-4.4.x--4.5.x-blue)](#requirements)
+
 Plugin to document containers, pods, networks, volume mounts and secrets in NetBox.
 
 **Status:** This plugin is under active development and is **not** recommended for production use yet!
@@ -40,6 +48,10 @@ It will support Podman and Docker - other container engines aren't supported, by
 - Pods: add network attachments via “Add Components” on the pod detail page.
 - Network attachments support both “User defined network” and custom modes (none/host/private/custom).
 - Secrets can be attached to containers with type (mount/env), target, and optional uid/gid/mode.
+
+## Documentation
+- End-user documentation is available in [`docs/`](docs/README.md).
+- GitHub Pages publishing guidance is in [`docs/github-pages.md`](docs/github-pages.md).
 
 ## Data Model (high level)
 - `Container` ↔ `Pod` (FK)

@@ -1,0 +1,17 @@
+---
+
+site_name: NetBox Containers Plugin
+site_description: End-user documentation for the NetBox Containers Plugin
+repo_url: https://github.com/rk-it-at/netbox_container_plugin
+repo_name: rk-it-at/netbox_container_plugin
+docs_dir: docs
+theme:
+  name: mkdocs
+nav:
+  - Overview: index.md
+  - Installation: installation.md
+  - Navigation: navigation.md
+  - Containers: containers.md
+  - Pods: pods.md
+  - Infra Objects: infra.md
+  - Troubleshooting: troubleshooting.md
