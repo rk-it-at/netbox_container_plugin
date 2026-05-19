@@ -1,0 +1,158 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (semantic, e.g. 0.2.0)"
+        required: true
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Prepare and publish GitHub release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$' || {
+            echo "Invalid version: $VERSION"
+            exit 1
+          }
+
+      - name: Ensure release runs from main
+        run: |
+          test "${{ github.ref_name }}" = "main" || {
+            echo "Release workflow must run from main branch."
+            exit 1
+          }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install release tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install antsibull-changelog build
+
+      - name: Bump version in project files
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          version = os.environ["VERSION"]
+
+          init_path = Path("netbox_containers/__init__.py")
+          pyproject_path = Path("pyproject.toml")
+
+          init_text = init_path.read_text(encoding="utf-8")
+          init_text, init_count = re.subn(
+              r'^__version__\s*=\s*".*?"\s*$',
+              f'__version__ = "{version}"',
+              init_text,
+              flags=re.MULTILINE,
+          )
+          if init_count != 1:
+              raise SystemExit("Could not update __version__ in netbox_containers/__init__.py")
+          init_path.write_text(init_text, encoding="utf-8")
+
+          py_text = pyproject_path.read_text(encoding="utf-8")
+          py_text, py_count = re.subn(
+              r'^version\s*=\s*".*?"\s*$',
+              f'version = "{version}"',
+              py_text,
+              count=1,
+              flags=re.MULTILINE,
+          )
+          if py_count != 1:
+              raise SystemExit("Could not update version in pyproject.toml")
+          pyproject_path.write_text(py_text, encoding="utf-8")
+          PY
+
+      - name: Generate release changelog
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          antsibull-changelog release --version "$VERSION"
+
+      - name: Commit release changes
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add netbox_containers/__init__.py pyproject.toml CHANGELOG.md changelogs/
+          git commit -m "Release v$VERSION"
+
+      - name: Create and push tag
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          git tag "$VERSION"
+          git push origin main
+          git push origin "$VERSION"
+
+      - name: Build package artifacts
+        run: python -m build
+
+      - name: Prepare release title and notes from CHANGELOG
+        id: changelog
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          RELEASE_DATE="$(date -u +%Y-%m-%d)"
+          # Try to read date from the matching changelog heading, e.g.:
+          # ## [0.1.0] - 2026-02-05
+          HEADING="$(grep -E "^## \\[$VERSION\\]( - [0-9]{4}-[0-9]{2}-[0-9]{2})?$" CHANGELOG.md | head -n1 || true)"
+          if [ -n "$HEADING" ]; then
+            PARSED_DATE="$(echo "$HEADING" | sed -nE 's/^## \[[^]]+\] - ([0-9]{4}-[0-9]{2}-[0-9]{2})$/\1/p')"
+            if [ -n "$PARSED_DATE" ]; then
+              RELEASE_DATE="$PARSED_DATE"
+            fi
+          fi
+
+          # Extract version section body from CHANGELOG.md
+          awk -v ver="$VERSION" '
+            BEGIN { in_section=0 }
+            $0 ~ "^## \\[" ver "\\]" { in_section=1; next }
+            $0 ~ "^## \\[" && in_section==1 { exit }
+            in_section==1 { print }
+          ' CHANGELOG.md | sed '/^[[:space:]]*$/N;/^\n$/D' > release-notes.md
+
+          # Fallback if no section content was found
+          if [ ! -s release-notes.md ]; then
+            echo "Release v$VERSION" > release-notes.md
+          fi
+
+          echo "release_date=$RELEASE_DATE" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          VERSION: ${{ inputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v$VERSION" \
+            --target main \
+            --title "v$VERSION - ${{ steps.changelog.outputs.release_date }}" \
+            --notes-file release-notes.md \
+            dist/*
