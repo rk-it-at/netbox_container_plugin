@@ -1,9 +1,7 @@
 from netbox.plugins import PluginConfig
 
 
-__version__ = "0.1.0"
-
-
+__version__ = "0.2.0"
 class ContainersConfig(PluginConfig):
     name = 'netbox_containers'
     verbose_name = 'NetBox Container'
