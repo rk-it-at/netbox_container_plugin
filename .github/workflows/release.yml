@@ -13,10 +13,11 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   release:
-    name: Prepare and publish GitHub release
+    name: Prepare release PR and publish GitHub release
     runs-on: ubuntu-latest
 
     steps:
@@ -104,13 +105,27 @@ jobs:
           git add netbox_containers/__init__.py pyproject.toml CHANGELOG.md changelogs/
           git commit -m "Release v$VERSION"
 
+      - name: Push release branch and open PR
+        env:
+          VERSION: ${{ inputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_BRANCH="release/v$VERSION"
+          git switch -c "$RELEASE_BRANCH"
+          git push -u origin "$RELEASE_BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$RELEASE_BRANCH" \
+            --title "Release v$VERSION" \
+            --body "Automated release preparation for v$VERSION."
+
       - name: Create and push tag
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          git tag "$VERSION"
-          git push origin main
-          git push origin "$VERSION"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
 
       - name: Build package artifacts
         run: python -m build
@@ -152,7 +167,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v$VERSION" \
-            --target main \
+            --target "release/v$VERSION" \
             --title "v$VERSION - ${{ steps.changelog.outputs.release_date }}" \
             --notes-file release-notes.md \
             dist/*
