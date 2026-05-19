@@ -1,0 +1,21 @@
+ancestor: null
+releases:
+  0.2.0:
+    changes:
+      minor_changes:
+      - Add CONTRIBUTION (https://github.com/rk-it-at/netbox_container_plugin/issues/3)
+      - Add support for Netbox 4.6 (https://github.com/rk-it-at/netbox_container_plugin/issues/13)
+      - Add support for container device redirection (https://github.com/rk-it-at/netbox_container_plugin/issues/6)
+      - Add support for group-add (https://github.com/rk-it-at/netbox_container_plugin/issues/7)
+      - Create release with Github actions (https://github.com/rk-it-at/netbox_container_plugin/issues/5)
+      - Provide documentation with screenshots (https://github.com/rk-it-at/netbox_container_plugin/issues/2)
+      - Use antsibull-changelog to auto-create changelogs (https://github.com/rk-it-at/netbox_container_plugin/issues/4)
+    fragments:
+    - 13-feature-add-support-for-netbox-46.yml
+    - 2-provide-documentation-with-screenshots.yml
+    - 3-add-contribution.yml
+    - 4-use-antsibull-changelog-to-auto-create-changelogs.yml
+    - 5-create-release-with-github-actions.yml
+    - 6-add-support-for-container-device-redirection.yml
+    - 7-add-support-for-group-add.yml
+    release_date: '2026-05-19'
