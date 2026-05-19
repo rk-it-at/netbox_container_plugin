@@ -33,4 +33,4 @@ Example flows:
 - Container -> Add Components -> Secrets
 - Pod -> Add Components -> Networks
 
-![Add Components placeholder](images/add-components-dropdown.png)
+![Add Components](images/container-mount-form.png)
