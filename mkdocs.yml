@@ -6,7 +6,7 @@ repo_url: https://github.com/rk-it-at/netbox_container_plugin
 repo_name: rk-it-at/netbox_container_plugin
 docs_dir: docs
 theme:
-  name: mkdocs
+  name: readthedocs
 nav:
   - Overview: index.md
   - Installation: installation.md
