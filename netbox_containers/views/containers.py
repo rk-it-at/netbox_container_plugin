@@ -24,7 +24,7 @@ class ContainerView(generic.ObjectView):
         "network_attachments__network",
         "tags",
     )
-#    queryset = models.Container.objects.all()
+    #    queryset = models.Container.objects.all()
     table = tables.ContainerTable
     filterset = filtersets.ContainerFilterSet
     template_name = "netbox_containers/container.html"
@@ -73,11 +73,9 @@ class ContainerView(generic.ObjectView):
 
 @register_model_view(models.Container, "list", path="", detail=False)
 class ContainerListView(generic.ObjectListView):
-    queryset = (
-        models.Container.objects
-        .annotate(device_count=Count("devices", distinct=True))
-        .annotate(vm_count=Count("virtual_machines", distinct=True))
-    )
+    queryset = models.Container.objects.annotate(
+        device_count=Count("devices", distinct=True)
+    ).annotate(vm_count=Count("virtual_machines", distinct=True))
     table = tables.ContainerTable
     filterset = filtersets.ContainerFilterSet
     filterset_form = forms.ContainerFilterForm
@@ -110,13 +108,12 @@ class ContainerBulkDeleteView(generic.BulkDeleteView):
     filterset = filtersets.ContainerFilterSet
 
 
-
-
 @register_model_view(models.Container, name="mounts", path="mounts")
 class MountListView(generic.ObjectChildrenView):
     """
     /plugins/netbox-containers/containers/<id>/mounts/
     """
+
     queryset = models.Container.objects.all()
 
     child_model = models.Mount
@@ -133,18 +130,20 @@ class MountListView(generic.ObjectChildrenView):
 
     def get_children_queryset(self, request, parent):
         return (
-            self.child_model.objects
-            .filter(container=parent)
+            self.child_model.objects.filter(container=parent)
             .select_related("volume")
             .order_by("pk")
         )
 
 
-@register_model_view(models.Container, name="network_attachments", path="network-attachments")
+@register_model_view(
+    models.Container, name="network_attachments", path="network-attachments"
+)
 class ContainerNetworkAttachmentListView(generic.ObjectChildrenView):
     """
     /plugins/netbox-containers/containers/<id>/network-attachments/
     """
+
     queryset = models.Container.objects.all()
 
     child_model = models.NetworkAttachment
@@ -161,8 +160,7 @@ class ContainerNetworkAttachmentListView(generic.ObjectChildrenView):
 
     def get_children_queryset(self, request, parent):
         return (
-            self.child_model.objects
-            .filter(container=parent)
+            self.child_model.objects.filter(container=parent)
             .select_related("network")
             .order_by("pk")
         )

@@ -75,19 +75,35 @@ class NetworkAttachment(NetBoxModel):
             raise ValidationError("Exactly one of container or pod must be set.")
         if self.mode == NetworkAttachmentModeChoices.NETWORK:
             if not self.network:
-                raise ValidationError({"network": "Network must be set for network mode."})
+                raise ValidationError(
+                    {"network": "Network must be set for network mode."}
+                )
             if self.options:
-                raise ValidationError({"options": "Options must be empty for network mode."})
+                raise ValidationError(
+                    {"options": "Options must be empty for network mode."}
+                )
         if self.mode == NetworkAttachmentModeChoices.CUSTOM:
             if not self.options:
-                raise ValidationError({"options": "Options must be set for options mode."})
+                raise ValidationError(
+                    {"options": "Options must be set for options mode."}
+                )
             if self.network:
-                raise ValidationError({"network": "Network must be empty for options mode."})
-        if self.mode in (NetworkAttachmentModeChoices.NONE, NetworkAttachmentModeChoices.HOST, NetworkAttachmentModeChoices.PRIVATE):
+                raise ValidationError(
+                    {"network": "Network must be empty for options mode."}
+                )
+        if self.mode in (
+            NetworkAttachmentModeChoices.NONE,
+            NetworkAttachmentModeChoices.HOST,
+            NetworkAttachmentModeChoices.PRIVATE,
+        ):
             if self.network:
-                raise ValidationError({"network": "Network must be empty for this mode."})
+                raise ValidationError(
+                    {"network": "Network must be empty for this mode."}
+                )
             if self.options:
-                raise ValidationError({"options": "Options must be empty for this mode."})
+                raise ValidationError(
+                    {"options": "Options must be empty for this mode."}
+                )
 
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:networkattachment", args=[self.pk])

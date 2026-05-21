@@ -4,9 +4,7 @@ from netbox.models import NetBoxModel
 from netbox_containers.constants import VolumeDriverChoices
 
 
-__all__ = (
-    "Volume",
-)
+__all__ = ("Volume",)
 
 
 class Volume(NetBoxModel):
@@ -16,11 +14,7 @@ class Volume(NetBoxModel):
         choices=VolumeDriverChoices,
     )
     options = models.CharField(max_length=100, blank=True, null=True)
-    label = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True
-    )
+    label = models.CharField(max_length=100, blank=True, null=True)
     comments = models.TextField(blank=True)
 
     class Meta:

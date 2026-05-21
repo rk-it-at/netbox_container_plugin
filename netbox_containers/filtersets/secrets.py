@@ -4,9 +4,7 @@ from netbox.filtersets import NetBoxModelFilterSet
 from netbox_containers.models import Secret
 
 
-__all__ = (
-    "SecretFilterSet",
-)
+__all__ = ("SecretFilterSet",)
 
 
 class SecretFilterSet(NetBoxModelFilterSet):

@@ -6,9 +6,7 @@ from netbox.models import NetBoxModel
 from netbox_containers.constants import NetworkDriverChoices
 
 
-__all__ = (
-    "Network",
-)
+__all__ = ("Network",)
 
 
 class Network(NetBoxModel):
@@ -29,21 +27,13 @@ class Network(NetBoxModel):
         blank=True,
     )
     prefixes = models.ManyToManyField(
-        'ipam.Prefix',
-        related_name='container_networks',
+        "ipam.Prefix",
+        related_name="container_networks",
         blank=True,
     )
     subnets_text = models.JSONField(default=list, blank=True)
-    label = models.CharField(
-        max_length=100,
-        blank=True,
-        null=True
-    )
-    gateway = models.GenericIPAddressField(
-        protocol="both",
-        blank=True,
-        null=True
-    )
+    label = models.CharField(max_length=100, blank=True, null=True)
+    gateway = models.GenericIPAddressField(protocol="both", blank=True, null=True)
     comments = models.TextField(blank=True)
 
     class Meta:
@@ -59,17 +49,19 @@ class Network(NetBoxModel):
             self.subnets_text = []
 
         if not isinstance(self.subnets_text, list):
-            raise ValidationError({'subnets_text': 'Must be a list of CIDR strings or left empty.'})
+            raise ValidationError(
+                {"subnets_text": "Must be a list of CIDR strings or left empty."}
+            )
 
         normalized = []
         for item in self.subnets_text:
-            s = (item or '').strip()
+            s = (item or "").strip()
             if not s:
                 continue
             try:
                 normalized.append(str(ip_network(s, strict=False)))
             except ValueError:
-                raise ValidationError({'subnets_text': f'Invalid CIDR: {item!r}'})
+                raise ValidationError({"subnets_text": f"Invalid CIDR: {item!r}"})
         self.subnets_text = normalized
 
     def __str__(self):

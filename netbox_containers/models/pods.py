@@ -5,9 +5,7 @@ from netbox.models import NetBoxModel
 from netbox_containers.constants import PodStatusChoices
 
 
-__all__ = (
-    "Pod",
-)
+__all__ = ("Pod",)
 
 
 class Pod(NetBoxModel):
@@ -57,9 +55,16 @@ class Pod(NetBoxModel):
         super().clean()
         if self.infra_container:
             if not self.infra_container.is_infra:
-                raise ValidationError({"infra_container": "Selected container is not marked as infra."})
-            if self.infra_container.pod_id != self.pk and self.infra_container.pod_id is not None:
-                raise ValidationError({"infra_container": "Infra container must belong to this pod."})
+                raise ValidationError(
+                    {"infra_container": "Selected container is not marked as infra."}
+                )
+            if (
+                self.infra_container.pod_id != self.pk
+                and self.infra_container.pod_id is not None
+            ):
+                raise ValidationError(
+                    {"infra_container": "Infra container must belong to this pod."}
+                )
 
     def get_pod_status_color(self):
         return PodStatusChoices.colors.get(self.status)

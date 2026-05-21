@@ -4,9 +4,7 @@ from ipam.models import Prefix
 from netbox_containers import models
 
 
-__all__ = (
-    "NetworkSerializer",
-)
+__all__ = ("NetworkSerializer",)
 
 
 class NetworkSerializer(NetBoxModelSerializer):

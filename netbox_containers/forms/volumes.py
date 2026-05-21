@@ -1,7 +1,11 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
-from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
+from netbox.forms import (
+    NetBoxModelForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelBulkEditForm,
+)
+from utilities.forms.fields import CommentField
 from utilities.forms.rendering import FieldSet
 from netbox_containers.models import Volume
 
@@ -18,14 +22,7 @@ class VolumeForm(NetBoxModelForm):
 
     class Meta:
         model = Volume
-        fields = [
-            "name",
-            "driver",
-            "label",
-            "options",
-            "tags",
-            "comments"
-        ]
+        fields = ["name", "driver", "label", "options", "tags", "comments"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,7 +43,7 @@ class VolumeBulkEditForm(NetBoxModelBulkEditForm):
         ),
     )
 
-    nullable_fields = ("options", "comments")  
+    nullable_fields = ("options", "comments")
 
 
 class VolumeFilterForm(NetBoxModelFilterSetForm):
@@ -60,6 +57,4 @@ class VolumeFilterForm(NetBoxModelFilterSetForm):
         label=_("Driver"),
     )
 
-    fieldsets = (
-        FieldSet("q", "driver", name=_("Volumes")),
-    )
+    fieldsets = (FieldSet("q", "driver", name=_("Volumes")),)

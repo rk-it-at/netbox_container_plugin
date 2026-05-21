@@ -5,13 +5,11 @@ from netbox.models import NetBoxModel
 from netbox_containers.constants import ContainerStatusChoices
 
 
-__all__ = (
-    "Container",
-)
+__all__ = ("Container",)
 
 
 memory_limit_validator = RegexValidator(
-    regex=r'^[1-9]\d*(?:[bBkKmMgG])?$',
+    regex=r"^[1-9]\d*(?:[bBkKmMgG])?$",
     message="Enter a positive number optionally followed by b, k, m, or g (e.g. 512m, 1g, 1048576).",
 )
 
@@ -19,9 +17,9 @@ memory_limit_validator = RegexValidator(
 class Container(NetBoxModel):
     name = models.CharField(max_length=100)
     image_tag = models.ForeignKey(
-        'netbox_containers.ImageTag',
-        on_delete=models.PROTECT,   # prevent deleting an ImageTag in use
-        related_name='containers',
+        "netbox_containers.ImageTag",
+        on_delete=models.PROTECT,  # prevent deleting an ImageTag in use
+        related_name="containers",
         blank=True,
         null=True,
         help_text="Image + tag to run (e.g. quay.io/keycloak/keycloak:26.4)",
@@ -36,9 +34,9 @@ class Container(NetBoxModel):
         help_text="One mapping per line: host_port:container_port (e.g. 8080:80).",
     )
     pod = models.ForeignKey(
-        'netbox_containers.Pod',
+        "netbox_containers.Pod",
         on_delete=models.SET_NULL,
-        related_name='containers',
+        related_name="containers",
         blank=True,
         null=True,
     )
@@ -71,12 +69,12 @@ class Container(NetBoxModel):
     environment = models.JSONField(
         blank=True,
         default=list,
-        help_text="One entry per line: KEY=VALUE (e.g. TZ=UTC)"
+        help_text="One entry per line: KEY=VALUE (e.g. TZ=UTC)",
     )
     add_host = models.JSONField(
         blank=True,
         default=list,
-        help_text="One entry per line: HOSTNAME:IP (e.g. db:10.0.0.10)"
+        help_text="One entry per line: HOSTNAME:IP (e.g. db:10.0.0.10)",
     )
     add_group = models.JSONField(
         blank=True,
@@ -92,7 +90,6 @@ class Container(NetBoxModel):
         default=False,
         help_text="Mark this container as the infra container for a pod.",
     )
-
 
     class Meta:
         verbose_name = "Container"

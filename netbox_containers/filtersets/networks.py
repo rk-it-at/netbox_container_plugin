@@ -8,13 +8,11 @@ from netbox_containers import models
 from netbox_containers.models import Network
 
 
-__all__ = (
-    "NetworkFilterSet",
-)
+__all__ = ("NetworkFilterSet",)
 
 
 class NetworkFilterSet(NetBoxModelFilterSet):
-    q = CharFilter(method='search', label='Search')
+    q = CharFilter(method="search", label="Search")
 
     devices = ModelMultipleChoiceFilter(
         field_name="devices",
@@ -27,9 +25,9 @@ class NetworkFilterSet(NetBoxModelFilterSet):
         label="Virtual machines",
     )
     prefixes = ModelMultipleChoiceFilter(
-        field_name='prefixes',
+        field_name="prefixes",
         queryset=Prefix.objects.all(),
-        label='Prefixes',
+        label="Prefixes",
     )
     driver = filters.MultipleChoiceFilter(
         choices=Network._meta.get_field("driver").choices
@@ -47,7 +45,7 @@ class NetworkFilterSet(NetBoxModelFilterSet):
             "prefixes",
             "label",
             "gateway",
-            "tag"
+            "tag",
         )
 
     def search(self, queryset, name, value):

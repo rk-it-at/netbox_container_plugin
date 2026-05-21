@@ -2,12 +2,20 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
-from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField, CommentField
+from netbox.forms import (
+    NetBoxModelForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelBulkEditForm,
+)
+from utilities.forms.fields import (
+    DynamicModelChoiceField,
+    DynamicModelMultipleChoiceField,
+    CommentField,
+)
 from utilities.forms.rendering import FieldSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
-from netbox_containers.models import Container, Pod, Image, ImageTag, Volume
+from netbox_containers.models import Container, Pod, Image, ImageTag
 import re
 
 
@@ -19,12 +27,12 @@ __all__ = (
 
 
 memory_limit_validator = RegexValidator(
-    regex=r'^[1-9]\d*(?:[bBkKmMgG])?$',
+    regex=r"^[1-9]\d*(?:[bBkKmMgG])?$",
     message="Enter a positive number optionally followed by b, k, m, or g (e.g. 512m, 1g, 1048576).",
 )
 
-HOST_ENTRY_RE = re.compile(r"^[^:\s]+:[^:\s]+$")     # hostname:ip (simple)
-ENV_ENTRY_RE  = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=.*$")  # KEY=VALUE
+HOST_ENTRY_RE = re.compile(r"^[^:\s]+:[^:\s]+$")  # hostname:ip (simple)
+ENV_ENTRY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=.*$")  # KEY=VALUE
 GROUP_ENTRY_RE = re.compile(r"^[^\s]+$")
 DEVICE_ENTRY_RE = re.compile(r"^/[^\s]*$")
 
@@ -114,7 +122,7 @@ class ContainerForm(NetBoxModelForm):
             "devices",
             "virtual_machines",
             "tags",
-            "comments"
+            "comments",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -126,32 +134,38 @@ class ContainerForm(NetBoxModelForm):
             self.initial["add_host_text"] = "\n".join(self.instance.add_host or [])
             self.initial["add_group_text"] = "\n".join(self.instance.add_group or [])
             self.initial["add_device_text"] = "\n".join(self.instance.add_device or [])
-            self.initial["environment_text"] = "\n".join(self.instance.environment or [])
+            self.initial["environment_text"] = "\n".join(
+                self.instance.environment or []
+            )
 
         # Editing existing container → prepopulate
         if self.instance.pk and self.instance.image_tag:
-            self.fields['image'].initial = self.instance.image_tag.image
-            self.fields['image_tag'].queryset = ImageTag.objects.filter(
+            self.fields["image"].initial = self.instance.image_tag.image
+            self.fields["image_tag"].queryset = ImageTag.objects.filter(
                 image=self.instance.image_tag.image
             )
 
         # Image selected (POST)
-        if 'image' in self.data:
+        if "image" in self.data:
             try:
-                image_id = int(self.data.get('image'))
-                self.fields['image_tag'].queryset = ImageTag.objects.filter(image_id=image_id)
+                image_id = int(self.data.get("image"))
+                self.fields["image_tag"].queryset = ImageTag.objects.filter(
+                    image_id=image_id
+                )
             except (TypeError, ValueError):
                 pass
         elif self.instance.pk and self.instance.image_tag_id:
-            self.fields["image_tag"].queryset = ImageTag.objects.filter(image=self.instance.image_tag.image)
+            self.fields["image_tag"].queryset = ImageTag.objects.filter(
+                image=self.instance.image_tag.image
+            )
 
     def clean_add_host_text(self):
         raw = (self.cleaned_data.get("add_host_text") or "").strip()
         if not raw:
             return []
 
-        lines = [l.strip() for l in raw.splitlines() if l.strip()]
-        bad = [l for l in lines if not HOST_ENTRY_RE.match(l)]
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        bad = [line for line in lines if not HOST_ENTRY_RE.match(line)]
         if bad:
             raise ValidationError(
                 "Invalid add-host entry. Use one per line in the form hostname:ip. "
@@ -164,8 +178,8 @@ class ContainerForm(NetBoxModelForm):
         if not raw:
             return []
 
-        lines = [l.strip() for l in raw.splitlines() if l.strip()]
-        bad = [l for l in lines if not ENV_ENTRY_RE.match(l)]
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        bad = [line for line in lines if not ENV_ENTRY_RE.match(line)]
         if bad:
             raise ValidationError(
                 "Invalid env entry. Use one per line in the form KEY=VALUE. "
@@ -178,8 +192,8 @@ class ContainerForm(NetBoxModelForm):
         if not raw:
             return []
 
-        lines = [l.strip() for l in raw.splitlines() if l.strip()]
-        bad = [l for l in lines if not GROUP_ENTRY_RE.match(l)]
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        bad = [line for line in lines if not GROUP_ENTRY_RE.match(line)]
         if bad:
             raise ValidationError(
                 "Invalid add-group entry. Use one group name or gid per line. "
@@ -192,8 +206,8 @@ class ContainerForm(NetBoxModelForm):
         if not raw:
             return []
 
-        lines = [l.strip() for l in raw.splitlines() if l.strip()]
-        bad = [l for l in lines if not DEVICE_ENTRY_RE.match(l)]
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        bad = [line for line in lines if not DEVICE_ENTRY_RE.match(line)]
         if bad:
             raise ValidationError(
                 "Invalid add-device entry. Use one /dev/... entry per line. "
@@ -204,11 +218,13 @@ class ContainerForm(NetBoxModelForm):
     def clean(self):
         super().clean()
 
-        image = self.cleaned_data.get('image')
-        image_tag = self.cleaned_data.get('image_tag')
+        image = self.cleaned_data.get("image")
+        image_tag = self.cleaned_data.get("image_tag")
 
         if image_tag and image and image_tag.image != image:
-            raise forms.ValidationError("Selected tag does not belong to selected image.")
+            raise forms.ValidationError(
+                "Selected tag does not belong to selected image."
+            )
 
         return self.cleaned_data
 
@@ -237,7 +253,7 @@ class ContainerBulkEditForm(NetBoxModelBulkEditForm):
         ),
     )
 
-    nullable_fields = ("user", "comments")  
+    nullable_fields = ("user", "comments")
 
 
 class ContainerFilterForm(NetBoxModelFilterSetForm):
@@ -250,7 +266,7 @@ class ContainerFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label=_("Status"),
     )
-    user   = forms.CharField(required=False, label="User")
+    user = forms.CharField(required=False, label="User")
 
     # Filter Containers by related Networks
     pod = DynamicModelChoiceField(
@@ -259,6 +275,4 @@ class ContainerFilterForm(NetBoxModelFilterSetForm):
         label="Pod",
     )
 
-    fieldsets = (
-        FieldSet("q", "status", "user", "pod", name=_("Containers")),
-    )
+    fieldsets = (FieldSet("q", "status", "user", "pod", name=_("Containers")),)

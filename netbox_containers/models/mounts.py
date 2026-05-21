@@ -4,9 +4,7 @@ from django.core.validators import RegexValidator
 from netbox.models import NetBoxModel
 
 
-__all__ = (
-    "Mount",
-)
+__all__ = ("Mount",)
 
 mount_opts_validator = RegexValidator(
     regex=r"^[A-Za-z0-9=,_:+.\-]*$",
@@ -21,7 +19,7 @@ container_path_validator = RegexValidator(
 
 class MountTypeChoices(models.TextChoices):
     VOLUME = "volume", "Named volume"
-    BIND   = "bind",   "Host path (bind mount)"
+    BIND = "bind", "Host path (bind mount)"
 
 
 class Mount(NetBoxModel):
@@ -65,7 +63,6 @@ class Mount(NetBoxModel):
         help_text="Comma-separated mount options (e.g. ro,Z,rshared,uid=1000).",
     )
 
-
     class Meta:
         verbose_name = "Mount"
         verbose_name_plural = "Mounts"
@@ -80,23 +77,37 @@ class Mount(NetBoxModel):
 
         if self.mount_type == MountTypeChoices.VOLUME:
             if not self.volume:
-                raise ValidationError({"volume": "A named volume must be selected for volume mounts."})
+                raise ValidationError(
+                    {"volume": "A named volume must be selected for volume mounts."}
+                )
             if self.host_path:
-                raise ValidationError({"host_path": "Host path must be empty for volume mounts."})
+                raise ValidationError(
+                    {"host_path": "Host path must be empty for volume mounts."}
+                )
 
         if self.mount_type == MountTypeChoices.BIND:
             if not self.host_path:
-                raise ValidationError({"host_path": "Host path is required for bind mounts."})
+                raise ValidationError(
+                    {"host_path": "Host path is required for bind mounts."}
+                )
             if self.volume_id:
-                raise ValidationError({"volume": "Volume must be empty for bind mounts."})
+                raise ValidationError(
+                    {"volume": "Volume must be empty for bind mounts."}
+                )
             if not self.host_path.startswith("/"):
-                raise ValidationError({"host_path": "Host path must be an absolute path."})
+                raise ValidationError(
+                    {"host_path": "Host path must be an absolute path."}
+                )
 
         super().clean()
 
     @property
     def source(self):
-        return self.volume.name if self.mount_type == MountTypeChoices.VOLUME else self.host_path
+        return (
+            self.volume.name
+            if self.mount_type == MountTypeChoices.VOLUME
+            else self.host_path
+        )
 
     @property
     def spec(self):

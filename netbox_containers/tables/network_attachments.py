@@ -3,9 +3,7 @@ from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import NetworkAttachment
 
 
-__all__ = (
-    "NetworkAttachmentTable",
-)
+__all__ = ("NetworkAttachmentTable",)
 
 
 class NetworkAttachmentTable(NetBoxTable):

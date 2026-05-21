@@ -3,9 +3,7 @@ from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Secret
 
 
-__all__ = (
-    "SecretTable",
-)
+__all__ = ("SecretTable",)
 
 
 class SecretTable(NetBoxTable):

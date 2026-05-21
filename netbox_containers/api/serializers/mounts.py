@@ -1,15 +1,11 @@
-from rest_framework import serializers
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox_containers import models
 
 
-__all__ = (
-    "MountSerializer",
-)
+__all__ = ("MountSerializer",)
 
 
 class MountSerializer(NetBoxModelSerializer):
-
     class Meta:
         model = models.Mount
         fields = (

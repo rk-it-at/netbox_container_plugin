@@ -32,7 +32,14 @@ class MountForm(NetBoxModelForm):
 
     class Meta:
         model = Mount
-        fields = ("container", "mount_type", "volume", "host_path", "dest_path", "options")
+        fields = (
+            "container",
+            "mount_type",
+            "volume",
+            "host_path",
+            "dest_path",
+            "options",
+        )
 
     def clean(self):
         cleaned = self.cleaned_data
@@ -44,7 +51,9 @@ class MountForm(NetBoxModelForm):
             if not vol:
                 raise forms.ValidationError("Select a volume for a volume mount.")
             if host:
-                raise forms.ValidationError("Host path must be empty for volume mounts.")
+                raise forms.ValidationError(
+                    "Host path must be empty for volume mounts."
+                )
 
         if mtype == MountTypeChoices.BIND:
             if not host:

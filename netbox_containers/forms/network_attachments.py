@@ -14,10 +14,14 @@ __all__ = (
 
 
 class NetworkAttachmentForm(NetBoxModelForm):
-    container = DynamicModelChoiceField(queryset=Container.objects.all(), required=False)
+    container = DynamicModelChoiceField(
+        queryset=Container.objects.all(), required=False
+    )
     pod = DynamicModelChoiceField(queryset=Pod.objects.all(), required=False)
     network = DynamicModelChoiceField(queryset=Network.objects.all(), required=False)
-    mode = forms.ChoiceField(choices=NetworkAttachmentModeChoices.choices, required=True)
+    mode = forms.ChoiceField(
+        choices=NetworkAttachmentModeChoices.choices, required=True
+    )
 
     class Meta:
         model = NetworkAttachment
@@ -51,7 +55,11 @@ class NetworkAttachmentForm(NetBoxModelForm):
             if network:
                 raise forms.ValidationError("Network must be empty for options mode.")
 
-        if mode in (NetworkAttachmentModeChoices.NONE, NetworkAttachmentModeChoices.HOST, NetworkAttachmentModeChoices.PRIVATE):
+        if mode in (
+            NetworkAttachmentModeChoices.NONE,
+            NetworkAttachmentModeChoices.HOST,
+            NetworkAttachmentModeChoices.PRIVATE,
+        ):
             if network:
                 raise forms.ValidationError("Network must be empty for this mode.")
             if options:
@@ -62,7 +70,9 @@ class NetworkAttachmentForm(NetBoxModelForm):
 
 class NetworkAttachmentCreateForm(NetBoxModelForm):
     network = DynamicModelChoiceField(queryset=Network.objects.all(), required=False)
-    mode = forms.ChoiceField(choices=NetworkAttachmentModeChoices.choices, required=True)
+    mode = forms.ChoiceField(
+        choices=NetworkAttachmentModeChoices.choices, required=True
+    )
 
     class Meta:
         model = NetworkAttachment
@@ -92,7 +102,11 @@ class NetworkAttachmentCreateForm(NetBoxModelForm):
             if network:
                 raise forms.ValidationError("Network must be empty for options mode.")
 
-        if mode in (NetworkAttachmentModeChoices.NONE, NetworkAttachmentModeChoices.HOST, NetworkAttachmentModeChoices.PRIVATE):
+        if mode in (
+            NetworkAttachmentModeChoices.NONE,
+            NetworkAttachmentModeChoices.HOST,
+            NetworkAttachmentModeChoices.PRIVATE,
+        ):
             if network:
                 raise forms.ValidationError("Network must be empty for this mode.")
             if options:
@@ -151,7 +165,11 @@ class NetworkAttachmentEditForm(NetworkAttachmentForm):
             if network:
                 raise forms.ValidationError("Network must be empty for options mode.")
 
-        if mode in (NetworkAttachmentModeChoices.NONE, NetworkAttachmentModeChoices.HOST, NetworkAttachmentModeChoices.PRIVATE):
+        if mode in (
+            NetworkAttachmentModeChoices.NONE,
+            NetworkAttachmentModeChoices.HOST,
+            NetworkAttachmentModeChoices.PRIVATE,
+        ):
             if network:
                 raise forms.ValidationError("Network must be empty for this mode.")
             if options:

@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from netbox.api.serializers import NetBoxModelSerializer
 from netbox_containers import models
 
@@ -10,7 +9,6 @@ __all__ = (
 
 
 class ImageSerializer(NetBoxModelSerializer):
-
     class Meta:
         model = models.Image
         fields = (
@@ -29,7 +27,6 @@ class ImageSerializer(NetBoxModelSerializer):
 
 
 class ImageTagSerializer(NetBoxModelSerializer):
-
     class Meta:
         model = models.ImageTag
         fields = (

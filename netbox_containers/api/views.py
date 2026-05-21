@@ -1,4 +1,3 @@
-from django.db.models import Count
 from rest_framework.routers import APIRootView
 
 from netbox.api.viewsets import NetBoxModelViewSet
@@ -36,7 +35,7 @@ class ImageViewSet(NetBoxModelViewSet):
 
 class ImageTagViewSet(NetBoxModelViewSet):
     queryset = models.ImageTag.objects.all()
-    #queryset = ImageTag.objects.select_related("image").order_by("image_id", "tag", "pk")
+    # queryset = ImageTag.objects.select_related("image").order_by("image_id", "tag", "pk")
 
     serializer_class = serializers.ImageTagSerializer
     filterset_class = filtersets.ImageTagFilterSet
