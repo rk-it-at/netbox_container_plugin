@@ -15,29 +15,22 @@ class ImageTable(NetBoxTable):
     name = tables.Column(linkify=True, verbose_name="Name")
     default_tag = tables.Column(verbose_name="Default tag")
     tag_count = columns.LinkedCountColumn(
-        accessor='tag_count',
-        viewname='plugins:netbox_containers:tag_list',
-        url_params={'images_id': 'pk'},
+        accessor="tag_count",
+        viewname="plugins:netbox_containers:tag_list",
+        url_params={"images_id": "pk"},
         verbose_name="Tags",
         orderable=False,
     )
-    label = tables.Column(linkify=True,)
+    label = tables.Column(
+        linkify=True,
+    )
     tags = columns.TagColumn()
 
     class Meta(NetBoxTable.Meta):
         model = Image
-        fields = (
-            'pk',
-            'name',
-            'registry',
-            'default_tag',
-            "tag_count",
-            "label",
-            "tags"
-        )
-        default_columns = (
-            'name', 'registry', 'default_tag', 'tag_count', 'label'
-        )
+        fields = ("pk", "name", "registry", "default_tag", "tag_count", "label", "tags")
+        default_columns = ("name", "registry", "default_tag", "tag_count", "label")
+
 
 #    def get_queryset(self, request):
 #        qs = super().get_queryset(request)

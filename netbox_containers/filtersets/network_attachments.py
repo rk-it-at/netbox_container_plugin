@@ -4,9 +4,7 @@ from netbox.filtersets import NetBoxModelFilterSet
 from netbox_containers.models import NetworkAttachment
 
 
-__all__ = (
-    "NetworkAttachmentFilterSet",
-)
+__all__ = ("NetworkAttachmentFilterSet",)
 
 
 class NetworkAttachmentFilterSet(NetBoxModelFilterSet):

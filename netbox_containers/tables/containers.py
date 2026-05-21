@@ -2,19 +2,16 @@ import django_tables2 as tables
 from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Container
-from netbox_containers.models.containers import ContainerStatusChoices
 
 
-__all__ = (
-    "ContainerTable",
-)
+__all__ = ("ContainerTable",)
 
 
 class ContainerTable(NetBoxTable):
     name = tables.Column(linkify=True)
     image = tables.Column(
-        accessor='image_tag.full_reference',
-        verbose_name='Image',
+        accessor="image_tag.full_reference",
+        verbose_name="Image",
     )
     status = columns.ChoiceFieldColumn()
     user = tables.Column(linkify=True)
@@ -65,14 +62,20 @@ class ContainerTable(NetBoxTable):
             "is_infra",
             "device_count",
             "vm_count",
-            "tags"
+            "tags",
         )
-        default_columns = ("name", "status", "pod", "is_infra", "published_ports", "device_count", "vm_count")
+        default_columns = (
+            "name",
+            "status",
+            "pod",
+            "is_infra",
+            "published_ports",
+            "device_count",
+            "vm_count",
+        )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return (
-            qs
-            .annotate(device_count=Count("devices", distinct=True))
-            .annotate(vm_count=Count("virtual_machines", distinct=True))
+        return qs.annotate(device_count=Count("devices", distinct=True)).annotate(
+            vm_count=Count("virtual_machines", distinct=True)
         )

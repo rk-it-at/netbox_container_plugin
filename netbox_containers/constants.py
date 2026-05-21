@@ -2,56 +2,61 @@ from utilities.choices import ChoiceSet
 
 
 class PodStatusChoices(ChoiceSet):
-    key = 'Pod.status'
+    key = "Pod.status"
     CHOICES = [
         ("created", "Created", "gray"),
         ("running", "Running", "green"),
         ("stopped", "Stopped", "yellow"),
-        ("exited",  "Exited",  "orange"),
-        ("dead",    "Dead",    "red"),
+        ("exited", "Exited", "orange"),
+        ("dead", "Dead", "red"),
     ]
     colors = {v: c for v, _, c in CHOICES}
+
 
 class ContainerStatusChoices(ChoiceSet):
-    key = 'Container.status'
+    key = "Container.status"
     CHOICES = [
-        ("created",     "Created",     "gray"),
+        ("created", "Created", "gray"),
         ("initialized", "Initialized", "gray"),
-        ("running",     "Running",     "green"),
-        ("paused",      "Paused",      "yellow"),
-        ("exited",      "Exited",      "orange"),
-        ("unknown",     "Unknown",     "red"),
+        ("running", "Running", "green"),
+        ("paused", "Paused", "yellow"),
+        ("exited", "Exited", "orange"),
+        ("unknown", "Unknown", "red"),
     ]
     colors = {v: c for v, _, c in CHOICES}
 
+
 class NetworkDriverChoices(ChoiceSet):
-    key = 'Network.driver'
+    key = "Network.driver"
     CHOICES = [
         ("bridge", "Bridge"),
         ("macvlan", "macvlan"),
         ("ipvlan", "ipvlan"),
     ]
 
+
 class ImageArchChoices(ChoiceSet):
     key = "ImageTag.arch"
     CHOICES = [
-        ("amd64",  "amd64"),
-        ("arm64",  "arm64"),
-        ("armv7",  "arm/v7"),
-        ("s390x",  "s390x"),
-        ("ppc64le","ppc64le"),
-        ("riscv64","riscv64"),
+        ("amd64", "amd64"),
+        ("arm64", "arm64"),
+        ("armv7", "arm/v7"),
+        ("s390x", "s390x"),
+        ("ppc64le", "ppc64le"),
+        ("riscv64", "riscv64"),
     ]
+
 
 class ImageOSChoices(ChoiceSet):
     key = "ImageTag.os"
     CHOICES = [
-        ("linux",   "Linux"),
+        ("linux", "Linux"),
         ("windows", "Windows"),
     ]
 
+
 class VolumeDriverChoices(ChoiceSet):
-    key = 'Volume.driver'
+    key = "Volume.driver"
     CHOICES = [
         ("local", "local"),
         ("image", "image"),

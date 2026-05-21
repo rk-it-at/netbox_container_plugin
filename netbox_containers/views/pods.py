@@ -33,8 +33,7 @@ class PodView(generic.ObjectView):
 @register_model_view(models.Pod, "list", path="", detail=False)
 class PodListView(generic.ObjectListView):
     queryset = (
-        models.Pod.objects
-        .annotate(container_count=Count("containers", distinct=True))
+        models.Pod.objects.annotate(container_count=Count("containers", distinct=True))
         .annotate(device_count=Count("devices", distinct=True))
         .annotate(vm_count=Count("virtual_machines", distinct=True))
     )
@@ -83,13 +82,12 @@ class PodBulkDeleteView(generic.BulkDeleteView):
     filterset = filtersets.PodFilterSet
 
 
-
-
 @register_model_view(models.Pod, name="network_attachments", path="network-attachments")
 class PodNetworkAttachmentListView(generic.ObjectChildrenView):
     """
     /plugins/netbox-containers/pods/<id>/network-attachments/
     """
+
     queryset = models.Pod.objects.all()
 
     child_model = models.NetworkAttachment
@@ -106,8 +104,7 @@ class PodNetworkAttachmentListView(generic.ObjectChildrenView):
 
     def get_children_queryset(self, request, parent):
         return (
-            self.child_model.objects
-            .filter(pod=parent)
+            self.child_model.objects.filter(pod=parent)
             .select_related("network")
             .order_by("pk")
         )

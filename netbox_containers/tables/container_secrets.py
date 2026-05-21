@@ -3,9 +3,7 @@ from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import ContainerSecret
 
 
-__all__ = (
-    "ContainerSecretTable",
-)
+__all__ = ("ContainerSecretTable",)
 
 
 class ContainerSecretTable(NetBoxTable):
@@ -30,4 +28,12 @@ class ContainerSecretTable(NetBoxTable):
             "mode",
             "tags",
         )
-        default_columns = ("container", "secret", "type", "target", "uid", "gid", "mode")
+        default_columns = (
+            "container",
+            "secret",
+            "type",
+            "target",
+            "uid",
+            "gid",
+            "mode",
+        )

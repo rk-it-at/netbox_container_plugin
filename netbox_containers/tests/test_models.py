@@ -1,7 +1,6 @@
 from django.test import TestCase
 from netbox_containers.models import (
     Container,
-    Pod,
     Network,
     NetworkAttachment,
     NetworkAttachmentModeChoices,
@@ -21,12 +20,18 @@ class NetworkAttachmentTests(TestCase):
     def test_network_attachment_network_mode(self):
         net = Network.objects.create(name="n1", driver="bridge")
         container = Container.objects.create(name="c1", status="running")
-        att = NetworkAttachment(container=container, network=net, mode=NetworkAttachmentModeChoices.NETWORK)
+        att = NetworkAttachment(
+            container=container, network=net, mode=NetworkAttachmentModeChoices.NETWORK
+        )
         att.full_clean()
 
     def test_network_attachment_custom_mode(self):
         container = Container.objects.create(name="c1", status="running")
-        att = NetworkAttachment(container=container, mode=NetworkAttachmentModeChoices.CUSTOM, options="pasta:--map-gw")
+        att = NetworkAttachment(
+            container=container,
+            mode=NetworkAttachmentModeChoices.CUSTOM,
+            options="pasta:--map-gw",
+        )
         att.full_clean()
 
 

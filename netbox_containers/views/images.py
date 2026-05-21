@@ -59,8 +59,8 @@ class ImageBulkDeleteView(generic.BulkDeleteView):
     filterset = filtersets.ImageFilterSet
 
 
-
 # Image Tags
+
 
 @register_model_view(models.ImageTag)
 class ImageTagView(generic.ObjectView):
@@ -91,17 +91,16 @@ class ImageTagDeleteView(generic.ObjectDeleteView):
     queryset = models.ImageTag.objects.all()
 
 
-#@register_model_view(models.ImageTag, "bulk_edit", path="bulk-edit", detail=False)
-#class ImageTagBulkEditView(generic.BulkEditView):
+# @register_model_view(models.ImageTag, "bulk_edit", path="bulk-edit", detail=False)
+# class ImageTagBulkEditView(generic.BulkEditView):
 #    queryset = models.ImageTag.objects.all()
 #    table = tables.ImageTagTable
 #    filterset = filtersets.ImageTagFilterSet
 #    form = forms.ImageTagBulkEditForm
 #
 #
-#@register_model_view(models.ImageTag, "bulk_delete", path="bulk-delete", detail=False)
-#class ImageTagBulkDeleteView(generic.BulkDeleteView):
+# @register_model_view(models.ImageTag, "bulk_delete", path="bulk-delete", detail=False)
+# class ImageTagBulkDeleteView(generic.BulkDeleteView):
 #    queryset = models.ImageTag.objects.all()
 #    table = tables.ImageTagTable
 #    filterset = filtersets.ImageTagFilterSet
-

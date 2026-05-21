@@ -59,4 +59,3 @@ class VolumeBulkDeleteView(generic.BulkDeleteView):
     queryset = models.Volume.objects.all()
     table = tables.VolumeTable
     filterset = filtersets.VolumeFilterSet
-

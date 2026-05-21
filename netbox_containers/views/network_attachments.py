@@ -19,7 +19,9 @@ __all__ = (
 
 @register_model_view(models.NetworkAttachment)
 class NetworkAttachmentView(generic.ObjectView):
-    queryset = models.NetworkAttachment.objects.select_related("network", "container", "pod")
+    queryset = models.NetworkAttachment.objects.select_related(
+        "network", "container", "pod"
+    )
     table = tables.NetworkAttachmentTable
     filterset = filtersets.NetworkAttachmentFilterSet
     template_name = "netbox_containers/network_attachment_detail.html"
@@ -27,13 +29,17 @@ class NetworkAttachmentView(generic.ObjectView):
 
 @register_model_view(models.NetworkAttachment, "list", path="", detail=False)
 class NetworkAttachmentListView(generic.ObjectListView):
-    queryset = models.NetworkAttachment.objects.select_related("network", "container", "pod")
+    queryset = models.NetworkAttachment.objects.select_related(
+        "network", "container", "pod"
+    )
     table = tables.NetworkAttachmentTable
     filterset = filtersets.NetworkAttachmentFilterSet
 
 
 class NetworkAttachmentContainerListView(generic.ObjectListView):
-    queryset = models.NetworkAttachment.objects.filter(container__isnull=False).select_related("network", "container")
+    queryset = models.NetworkAttachment.objects.filter(
+        container__isnull=False
+    ).select_related("network", "container")
     table = tables.NetworkAttachmentTable
     filterset = filtersets.NetworkAttachmentFilterSet
 
@@ -44,7 +50,9 @@ class NetworkAttachmentContainerListView(generic.ObjectListView):
 
 
 class NetworkAttachmentPodListView(generic.ObjectListView):
-    queryset = models.NetworkAttachment.objects.filter(pod__isnull=False).select_related("network", "pod")
+    queryset = models.NetworkAttachment.objects.filter(
+        pod__isnull=False
+    ).select_related("network", "pod")
     table = tables.NetworkAttachmentTable
     filterset = filtersets.NetworkAttachmentFilterSet
 
@@ -82,7 +90,9 @@ class NetworkAttachmentCreateView(generic.ObjectEditView):
         if not container_id and request.resolver_match:
             container_id = request.resolver_match.kwargs.get("container_id")
         if not container_id:
-            match = re.search(r"/containers/(?P<cid>\\d+)/network-attachments/add/?", request.path)
+            match = re.search(
+                r"/containers/(?P<cid>\\d+)/network-attachments/add/?", request.path
+            )
             if match:
                 container_id = match.group("cid")
         return int(container_id) if container_id else None
@@ -92,7 +102,9 @@ class NetworkAttachmentCreateView(generic.ObjectEditView):
         if not pod_id and request.resolver_match:
             pod_id = request.resolver_match.kwargs.get("pod_id")
         if not pod_id:
-            match = re.search(r"/pods/(?P<pid>\\d+)/network-attachments/add/?", request.path)
+            match = re.search(
+                r"/pods/(?P<pid>\\d+)/network-attachments/add/?", request.path
+            )
             if match:
                 pod_id = match.group("pid")
         return int(pod_id) if pod_id else None
@@ -124,7 +136,9 @@ class NetworkAttachmentCreateView(generic.ObjectEditView):
     def get_return_url(self, request, obj=None):
         container_id = self._get_container_id(request)
         if container_id:
-            return reverse("plugins:netbox_containers:container", kwargs={"pk": container_id})
+            return reverse(
+                "plugins:netbox_containers:container", kwargs={"pk": container_id}
+            )
         pod_id = self._get_pod_id(request)
         if pod_id:
             return reverse("plugins:netbox_containers:pod", kwargs={"pk": pod_id})

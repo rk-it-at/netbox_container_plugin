@@ -3,9 +3,7 @@ from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Volume
 
 
-__all__ = (
-    "VolumeTable",
-)
+__all__ = ("VolumeTable",)
 
 
 class VolumeTable(NetBoxTable):
@@ -17,12 +15,5 @@ class VolumeTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Volume
-        fields = (
-            "pk",
-            "name",
-            "driver",
-            "label",
-            "options",
-            "tags"
-        )
+        fields = ("pk", "name", "driver", "label", "options", "tags")
         default_columns = ("name", "driver", "label")

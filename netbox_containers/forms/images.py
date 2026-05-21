@@ -1,10 +1,13 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
+from netbox.forms import (
+    NetBoxModelForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelBulkEditForm,
+)
 from utilities.forms.fields import DynamicModelChoiceField, CommentField
 from utilities.forms.rendering import FieldSet
 from netbox_containers.models import Image, ImageTag
-from netbox_containers.filtersets import ImageFilterSet, ImageTagFilterSet
 
 
 __all__ = (
@@ -21,13 +24,7 @@ class ImageForm(NetBoxModelForm):
 
     class Meta:
         model = Image
-        fields = [
-            "name",
-            "registry",
-            "default_tag",
-            "tags",
-            "comments"
-        ]
+        fields = ["name", "registry", "default_tag", "tags", "comments"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,7 +66,7 @@ class ImageBulkEditForm(NetBoxModelBulkEditForm):
         ),
     )
 
-    nullable_fields = ("os", "arch", "digest", "size", "label", "comments")       
+    nullable_fields = ("os", "arch", "digest", "size", "label", "comments")
 
 
 class ImageFilterForm(NetBoxModelFilterSetForm):
@@ -81,21 +78,23 @@ class ImageFilterForm(NetBoxModelFilterSetForm):
     name = forms.CharField(required=False, label=_("Name"))
     tag_label = forms.CharField(required=False, label=_("Tag (text search)"))
 
-    fieldsets = (
-        FieldSet("q", "registry", "name", "tag_label", name=_("Images")),
-    )
+    fieldsets = (FieldSet("q", "registry", "name", "tag_label", name=_("Images")),)
 
 
 class ImageTagFilterForm(NetBoxModelFilterSetForm):
     model = ImageTag
 
     q = forms.CharField(required=False, label=_("Search"))
-    image = DynamicModelChoiceField(queryset=Image.objects.all(), required=False, label=_("Image"))
+    image = DynamicModelChoiceField(
+        queryset=Image.objects.all(), required=False, label=_("Image")
+    )
     image_tag = forms.CharField(required=False, label=_("Tag"))
     os = forms.CharField(required=False, label=_("OS"))
     arch = forms.CharField(required=False, label=_("Arch"))
     digest = forms.CharField(required=False, label=_("Digest"))
 
     fieldsets = (
-        FieldSet("q", "image", "image_tag", "os", "arch", "digest", name=_("Image Tags")),
+        FieldSet(
+            "q", "image", "image_tag", "os", "arch", "digest", name=_("Image Tags")
+        ),
     )

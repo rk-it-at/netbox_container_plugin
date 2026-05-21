@@ -2,8 +2,16 @@ from django import forms
 import json
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
-from utilities.forms.fields import DynamicModelChoiceField, DynamicModelMultipleChoiceField, CommentField
+from netbox.forms import (
+    NetBoxModelForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelBulkEditForm,
+)
+from utilities.forms.fields import (
+    DynamicModelChoiceField,
+    DynamicModelMultipleChoiceField,
+    CommentField,
+)
 from utilities.forms.rendering import FieldSet
 from dcim.models import Device
 from virtualization.models import VirtualMachine
@@ -63,7 +71,7 @@ class PodForm(NetBoxModelForm):
             "devices",
             "virtual_machines",
             "tags",
-            "comments"
+            "comments",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -92,8 +100,8 @@ class PodForm(NetBoxModelForm):
         raw = (self.cleaned_data.get("add_host_text") or "").strip()
         if not raw:
             return []
-        lines = [l.strip() for l in raw.splitlines() if l.strip()]
-        bad = [l for l in lines if not HOST_ENTRY_RE.match(l)]
+        lines = [line.strip() for line in raw.splitlines() if line.strip()]
+        bad = [line for line in lines if not HOST_ENTRY_RE.match(line)]
         if bad:
             raise ValidationError(
                 "Invalid add-host entry. Use one per line in the form hostname:ip. "
@@ -123,7 +131,7 @@ class PodBulkEditForm(NetBoxModelBulkEditForm):
         ),
     )
 
-    nullable_fields = ("user", "comments")  
+    nullable_fields = ("user", "comments")
 
 
 class PodFilterForm(NetBoxModelFilterSetForm):
@@ -136,8 +144,6 @@ class PodFilterForm(NetBoxModelFilterSetForm):
         required=False,
         label=_("Status"),
     )
-    user   = forms.CharField(required=False, label="User")
+    user = forms.CharField(required=False, label="User")
 
-    fieldsets = (
-        FieldSet("q", "status", "user", name=_("Pods")),
-    )
+    fieldsets = (FieldSet("q", "status", "user", name=_("Pods")),)

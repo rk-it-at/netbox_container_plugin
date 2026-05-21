@@ -1,11 +1,9 @@
 import django_tables2 as tables
-from netbox.tables import NetBoxTable, columns
+from netbox.tables import NetBoxTable
 from netbox_containers.models import Mount
 
 
-__all__ = (
-    "MountTable",
-)
+__all__ = ("MountTable",)
 
 
 class MountTable(NetBoxTable):
@@ -24,6 +22,6 @@ class MountTable(NetBoxTable):
             "source",
             "dest_path",
             "options",
-            "tags"
+            "tags",
         )
         default_columns = ("container", "mount_type", "source", "dest_path", "options")

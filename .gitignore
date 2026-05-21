@@ -50,6 +50,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+ruff_check
+ruff_format
 
 # Translations
 *.mo

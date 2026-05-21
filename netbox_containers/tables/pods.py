@@ -2,12 +2,9 @@ import django_tables2 as tables
 from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
 from netbox_containers.models import Pod
-from netbox_containers.models.pods import PodStatusChoices
 
 
-__all__ = (
-    "PodTable",
-)
+__all__ = ("PodTable",)
 
 
 class PodTable(NetBoxTable):
@@ -49,9 +46,16 @@ class PodTable(NetBoxTable):
             "container_count",
             "device_count",
             "vm_count",
-            "tags"
+            "tags",
         )
-        default_columns = ("name", "status", "published_ports", "container_count", "device_count", "vm_count")
+        default_columns = (
+            "name",
+            "status",
+            "published_ports",
+            "container_count",
+            "device_count",
+            "vm_count",
+        )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

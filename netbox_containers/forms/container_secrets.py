@@ -13,7 +13,9 @@ __all__ = (
 
 
 class ContainerSecretForm(NetBoxModelForm):
-    container = DynamicModelChoiceField(queryset=Container.objects.all(), required=False)
+    container = DynamicModelChoiceField(
+        queryset=Container.objects.all(), required=False
+    )
     secret = DynamicModelChoiceField(queryset=Secret.objects.all(), required=True)
     type = forms.ChoiceField(choices=ContainerSecretTypeChoices.choices, required=True)
 
@@ -30,7 +32,9 @@ class ContainerSecretForm(NetBoxModelForm):
         mode = (cleaned.get("mode") or "").strip()
         if ctype == ContainerSecretTypeChoices.ENV:
             if uid or gid or mode:
-                raise forms.ValidationError("UID/GID/Mode are only valid for mount secrets.")
+                raise forms.ValidationError(
+                    "UID/GID/Mode are only valid for mount secrets."
+                )
         return cleaned
 
 
@@ -55,7 +59,9 @@ class ContainerSecretCreateForm(NetBoxModelForm):
         mode = (cleaned.get("mode") or "").strip()
         if ctype == ContainerSecretTypeChoices.ENV:
             if uid or gid or mode:
-                raise forms.ValidationError("UID/GID/Mode are only valid for mount secrets.")
+                raise forms.ValidationError(
+                    "UID/GID/Mode are only valid for mount secrets."
+                )
         return cleaned
 
     def save(self, commit=True):
@@ -85,5 +91,7 @@ class ContainerSecretEditForm(NetBoxModelForm):
         mode = (cleaned.get("mode") or "").strip()
         if ctype == ContainerSecretTypeChoices.ENV:
             if uid or gid or mode:
-                raise forms.ValidationError("UID/GID/Mode are only valid for mount secrets.")
+                raise forms.ValidationError(
+                    "UID/GID/Mode are only valid for mount secrets."
+                )
         return cleaned

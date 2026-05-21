@@ -61,7 +61,9 @@ class MountCreateView(generic.ObjectEditView):
         if not container_id and request.resolver_match:
             container_id = request.resolver_match.kwargs.get("container_id")
         if not container_id:
-            container_id = request.GET.get("container_id") or request.GET.get("container")
+            container_id = request.GET.get("container_id") or request.GET.get(
+                "container"
+            )
         if not container_id:
             match = re.search(r"/containers/(?P<cid>\\d+)/mounts/add/?", request.path)
             if match:
@@ -93,5 +95,7 @@ class MountCreateView(generic.ObjectEditView):
     def get_return_url(self, request, obj=None):
         container_id = self._get_container_id(request)
         if container_id:
-            return reverse("plugins:netbox_containers:container", kwargs={"pk": container_id})
+            return reverse(
+                "plugins:netbox_containers:container", kwargs={"pk": container_id}
+            )
         return super().get_return_url(request, obj)

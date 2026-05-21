@@ -1,0 +1,6 @@
+---
+
+minor_changes:
+  - "[Feature]: Use ruff for Python linting tests (https://github.com/rk-it-at/netbox_container_plugin/issues/17)"
+
+...

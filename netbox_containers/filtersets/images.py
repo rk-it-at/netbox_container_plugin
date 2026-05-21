@@ -1,5 +1,4 @@
 import django_filters as filters
-from django_filters import CharFilter, ModelMultipleChoiceFilter
 from netbox.filtersets import NetBoxModelFilterSet
 from netbox_containers.models import Image, ImageTag
 

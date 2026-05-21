@@ -1,6 +1,10 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm
+from netbox.forms import (
+    NetBoxModelForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelBulkEditForm,
+)
 from utilities.forms.rendering import FieldSet
 from netbox_containers.models import Secret, SecretDriverChoices
 
@@ -72,6 +76,4 @@ class SecretFilterForm(NetBoxModelFilterSetForm):
         label=_("Driver"),
     )
 
-    fieldsets = (
-        FieldSet("q", "driver", name=_("Secrets")),
-    )
+    fieldsets = (FieldSet("q", "driver", name=_("Secrets")),)

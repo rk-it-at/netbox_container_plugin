@@ -6,13 +6,11 @@ from netbox.filtersets import NetBoxModelFilterSet
 from netbox_containers.models import Container, Pod
 
 
-__all__ = (
-    "ContainerFilterSet",
-)
+__all__ = ("ContainerFilterSet",)
 
 
 class ContainerFilterSet(NetBoxModelFilterSet):
-    q = CharFilter(method='search', label='Search')
+    q = CharFilter(method="search", label="Search")
 
     status = filters.MultipleChoiceFilter(
         choices=Container._meta.get_field("status").choices
@@ -27,9 +25,7 @@ class ContainerFilterSet(NetBoxModelFilterSet):
         queryset=VirtualMachine.objects.all(),
         label="Virtual machines",
     )
-    pod = filters.ModelChoiceFilter(
-        queryset=Pod.objects.all()
-    )
+    pod = filters.ModelChoiceFilter(queryset=Pod.objects.all())
     pod_id = filters.NumberFilter(field_name="pod_id")
     network_id = filters.NumberFilter(method="filter_network")
     is_infra = filters.BooleanFilter()
@@ -48,7 +44,7 @@ class ContainerFilterSet(NetBoxModelFilterSet):
             "network_id",
             "devices",
             "virtual_machines",
-            "tag"
+            "tag",
         )
 
     def search(self, queryset, name, value):

@@ -84,7 +84,9 @@ class ContainerSecretCreateView(generic.ObjectEditView):
     def get_return_url(self, request, obj=None):
         container_id = self._get_container_id(request)
         if container_id:
-            return reverse("plugins:netbox_containers:container", kwargs={"pk": container_id})
+            return reverse(
+                "plugins:netbox_containers:container", kwargs={"pk": container_id}
+            )
         return super().get_return_url(request, obj)
 
 
@@ -93,6 +95,7 @@ class ContainerSecretChildListView(generic.ObjectChildrenView):
     """
     /plugins/netbox-containers/containers/<id>/secrets/
     """
+
     queryset = models.Container.objects.all()
 
     child_model = models.ContainerSecret
@@ -109,8 +112,7 @@ class ContainerSecretChildListView(generic.ObjectChildrenView):
 
     def get_children_queryset(self, request, parent):
         return (
-            self.child_model.objects
-            .filter(container=parent)
+            self.child_model.objects.filter(container=parent)
             .select_related("secret")
             .order_by("pk")
         )
