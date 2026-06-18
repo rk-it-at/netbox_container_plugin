@@ -67,3 +67,10 @@ It will support Podman and Docker - other container engines aren't supported, by
 
 ## License
 See [`LICENSE`](LICENSE).
+
+## AI-Assisted Project
+
+This project was substantially coded by Large Language Models (LLMs) with human review.
+
+- [AI Attribution](https://aiattribution.github.io) AIA PAI SeCeNc Hin R ChatGPT v1.0
+
