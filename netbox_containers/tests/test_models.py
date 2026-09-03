@@ -1,12 +1,14 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
+
 from netbox_containers.models import (
     Container,
+    ContainerSecret,
+    ContainerSecretTypeChoices,
     Network,
     NetworkAttachment,
     NetworkAttachmentModeChoices,
     Secret,
-    ContainerSecret,
-    ContainerSecretTypeChoices,
 )
 
 
@@ -14,7 +16,7 @@ class NetworkAttachmentTests(TestCase):
     def test_network_attachment_requires_one_target(self):
         net = Network.objects.create(name="n1", driver="bridge")
         att = NetworkAttachment(network=net, mode=NetworkAttachmentModeChoices.NETWORK)
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             att.full_clean()
 
     def test_network_attachment_network_mode(self):
@@ -46,7 +48,7 @@ class ContainerSecretTests(TestCase):
             target="ENV_VAR",
             uid=1000,
         )
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             cs.full_clean()
 
     def test_mount_secret_allows_uid_gid_mode(self):

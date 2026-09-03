@@ -1,6 +1,5 @@
-from rest_framework.routers import APIRootView
-
 from netbox.api.viewsets import NetBoxModelViewSet
+from rest_framework.routers import APIRootView
 
 from netbox_containers import filtersets, models
 

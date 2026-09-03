@@ -2,18 +2,18 @@ from django.db.models import Count
 from django.urls import reverse
 from netbox.views import generic
 from utilities.views import ViewTab, register_model_view
-from netbox_containers import forms, models, tables, filtersets
-from netbox_containers.models.containers import ContainerStatusChoices
-from netbox_containers.tables.mounts import MountTable
-from netbox_containers.tables.container_secrets import ContainerSecretTable
 
+from netbox_containers import filtersets, forms, models, tables
+from netbox_containers.models.containers import ContainerStatusChoices
+from netbox_containers.tables.container_secrets import ContainerSecretTable
+from netbox_containers.tables.mounts import MountTable
 
 __all__ = (
-    "ContainerView",
-    "ContainerListView",
-    "ContainerEditView",
     "ContainerDeleteView",
+    "ContainerEditView",
+    "ContainerListView",
     "ContainerNetworkAttachmentListView",
+    "ContainerView",
 )
 
 

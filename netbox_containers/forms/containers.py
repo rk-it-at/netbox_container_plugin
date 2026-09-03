@@ -1,28 +1,29 @@
-from django.core.validators import RegexValidator
-from django.core.exceptions import ValidationError
-from django import forms
-from django.utils.translation import gettext_lazy as _
-from netbox.forms import (
-    NetBoxModelForm,
-    NetBoxModelFilterSetForm,
-    NetBoxModelBulkEditForm,
-)
-from utilities.forms.fields import (
-    DynamicModelChoiceField,
-    DynamicModelMultipleChoiceField,
-    CommentField,
-)
-from utilities.forms.rendering import FieldSet
-from dcim.models import Device
-from virtualization.models import VirtualMachine
-from netbox_containers.models import Container, Pod, Image, ImageTag
 import re
 
+from dcim.models import Device
+from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
+from netbox.forms import (
+    NetBoxModelBulkEditForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelForm,
+)
+from utilities.forms.fields import (
+    CommentField,
+    DynamicModelChoiceField,
+    DynamicModelMultipleChoiceField,
+)
+from utilities.forms.rendering import FieldSet
+from virtualization.models import VirtualMachine
+
+from netbox_containers.models import Container, Image, ImageTag, Pod
 
 __all__ = (
-    "ContainerForm",
-    "ContainerFilterForm",
     "ContainerBulkEditForm",
+    "ContainerFilterForm",
+    "ContainerForm",
 )
 
 
@@ -102,7 +103,7 @@ class ContainerForm(NetBoxModelForm):
 
     class Meta:
         model = Container
-        fields = [
+        fields = (
             "name",
             "status",
             "user",
@@ -123,7 +124,7 @@ class ContainerForm(NetBoxModelForm):
             "virtual_machines",
             "tags",
             "comments",
-        ]
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

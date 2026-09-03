@@ -1,8 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
-from netbox_containers.constants import VolumeDriverChoices
 
+from netbox_containers.constants import VolumeDriverChoices
 
 __all__ = ("Volume",)
 

@@ -1,14 +1,14 @@
 from django import forms
 from netbox.forms import NetBoxModelForm
 from utilities.forms.fields import DynamicModelChoiceField
-from netbox_containers.models import ContainerSecret, Secret, Container
+
+from netbox_containers.models import Container, ContainerSecret, Secret
 from netbox_containers.models.container_secrets import ContainerSecretTypeChoices
 
-
 __all__ = (
-    "ContainerSecretForm",
     "ContainerSecretCreateForm",
     "ContainerSecretEditForm",
+    "ContainerSecretForm",
 )
 
 
@@ -30,11 +30,10 @@ class ContainerSecretForm(NetBoxModelForm):
         uid = cleaned.get("uid")
         gid = cleaned.get("gid")
         mode = (cleaned.get("mode") or "").strip()
-        if ctype == ContainerSecretTypeChoices.ENV:
-            if uid or gid or mode:
-                raise forms.ValidationError(
-                    "UID/GID/Mode are only valid for mount secrets."
-                )
+        if ctype == ContainerSecretTypeChoices.ENV and (uid or gid or mode):
+            raise forms.ValidationError(
+                "UID/GID/Mode are only valid for mount secrets."
+            )
         return cleaned
 
 
@@ -57,11 +56,10 @@ class ContainerSecretCreateForm(NetBoxModelForm):
         uid = cleaned.get("uid")
         gid = cleaned.get("gid")
         mode = (cleaned.get("mode") or "").strip()
-        if ctype == ContainerSecretTypeChoices.ENV:
-            if uid or gid or mode:
-                raise forms.ValidationError(
-                    "UID/GID/Mode are only valid for mount secrets."
-                )
+        if ctype == ContainerSecretTypeChoices.ENV and (uid or gid or mode):
+            raise forms.ValidationError(
+                "UID/GID/Mode are only valid for mount secrets."
+            )
         return cleaned
 
     def save(self, commit=True):
@@ -89,9 +87,8 @@ class ContainerSecretEditForm(NetBoxModelForm):
         uid = cleaned.get("uid")
         gid = cleaned.get("gid")
         mode = (cleaned.get("mode") or "").strip()
-        if ctype == ContainerSecretTypeChoices.ENV:
-            if uid or gid or mode:
-                raise forms.ValidationError(
-                    "UID/GID/Mode are only valid for mount secrets."
-                )
+        if ctype == ContainerSecretTypeChoices.ENV and (uid or gid or mode):
+            raise forms.ValidationError(
+                "UID/GID/Mode are only valid for mount secrets."
+            )
         return cleaned

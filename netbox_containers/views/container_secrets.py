@@ -1,18 +1,19 @@
 import re
+
 from django.urls import reverse
 from netbox.views import generic
 from utilities.views import ViewTab, register_model_view
-from netbox_containers import forms, models, tables, filtersets
 
+from netbox_containers import filtersets, forms, models, tables
 
 __all__ = (
-    "ContainerSecretView",
-    "ContainerSecretListView",
     "ContainerSecretAddView",
-    "ContainerSecretEditView",
-    "ContainerSecretDeleteView",
-    "ContainerSecretCreateView",
     "ContainerSecretChildListView",
+    "ContainerSecretCreateView",
+    "ContainerSecretDeleteView",
+    "ContainerSecretEditView",
+    "ContainerSecretListView",
+    "ContainerSecretView",
 )
 
 

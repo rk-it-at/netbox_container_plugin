@@ -3,7 +3,6 @@ from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
 
-
 __all__ = (
     "ContainerSecret",
     "ContainerSecretTypeChoices",
@@ -52,9 +51,10 @@ class ContainerSecret(NetBoxModel):
 
     def clean(self):
         super().clean()
-        if self.type == ContainerSecretTypeChoices.ENV:
-            if self.uid or self.gid or self.mode:
-                raise ValidationError("UID/GID/Mode are only valid for mount secrets.")
+        if self.type == ContainerSecretTypeChoices.ENV and (
+            self.uid or self.gid or self.mode
+        ):
+            raise ValidationError("UID/GID/Mode are only valid for mount secrets.")
 
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:containersecret", args=[self.pk])

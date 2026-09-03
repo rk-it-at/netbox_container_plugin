@@ -1,14 +1,14 @@
 from netbox.views import generic
 from utilities.views import register_model_view
-from netbox_containers import forms, models, tables, filtersets
+
+from netbox_containers import filtersets, forms, models, tables
 from netbox_containers.models.volumes import VolumeDriverChoices
 
-
 __all__ = (
-    "VolumeView",
-    "VolumeListView",
-    "VolumeEditView",
     "VolumeDeleteView",
+    "VolumeEditView",
+    "VolumeListView",
+    "VolumeView",
 )
 
 

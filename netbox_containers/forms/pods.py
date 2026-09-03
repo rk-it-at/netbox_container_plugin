@@ -1,28 +1,29 @@
-from django import forms
 import json
+
+from dcim.models import Device
+from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import (
-    NetBoxModelForm,
-    NetBoxModelFilterSetForm,
     NetBoxModelBulkEditForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelForm,
 )
 from utilities.forms.fields import (
+    CommentField,
     DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
-    CommentField,
 )
 from utilities.forms.rendering import FieldSet
-from dcim.models import Device
 from virtualization.models import VirtualMachine
-from netbox_containers.models import Pod, Container
-from netbox_containers.forms.containers import HOST_ENTRY_RE
 
+from netbox_containers.forms.containers import HOST_ENTRY_RE
+from netbox_containers.models import Container, Pod
 
 __all__ = (
-    "PodForm",
-    "PodFilterForm",
     "PodBulkEditForm",
+    "PodFilterForm",
+    "PodForm",
 )
 
 
@@ -61,7 +62,7 @@ class PodForm(NetBoxModelForm):
 
     class Meta:
         model = Pod
-        fields = [
+        fields = (
             "name",
             "status",
             "user",
@@ -72,7 +73,7 @@ class PodForm(NetBoxModelForm):
             "virtual_machines",
             "tags",
             "comments",
-        ]
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -2,14 +2,14 @@ from django import forms
 from netbox.forms import NetBoxModelForm
 from utilities.forms.fields import DynamicModelChoiceField
 from utilities.forms.rendering import FieldSet
-from netbox_containers.models import NetworkAttachment, Network, Pod, Container
+
+from netbox_containers.models import Container, Network, NetworkAttachment, Pod
 from netbox_containers.models.network_attachments import NetworkAttachmentModeChoices
 
-
 __all__ = (
-    "NetworkAttachmentForm",
     "NetworkAttachmentCreateForm",
     "NetworkAttachmentEditForm",
+    "NetworkAttachmentForm",
 )
 
 

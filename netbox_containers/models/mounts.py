@@ -1,8 +1,7 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.urls import reverse
-from django.core.validators import RegexValidator
 from netbox.models import NetBoxModel
-
 
 __all__ = ("Mount",)
 
