@@ -50,6 +50,7 @@ docs/                      MkDocs end-user docs (see mkdocs.yml for nav)
 changelogs/                 antsibull-changelog fragments + generated CHANGELOG.md
 .github/workflows/          validate.yml (CI), release.yml (manual release),
                            docs-pages.yml (docs deploy)
+.yamllint                   yamllint config (extends "default", strict)
 ```
 
 `models/__init__.py`, `views/__init__.py`, `forms/__init__.py`, `tables/__init__.py`,
@@ -142,10 +143,31 @@ python -m compileall .
 flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 ruff check .
 ruff format --diff .
+yamllint .
 ```
 
 CI (`validate.yml`) also runs a non-blocking `flake8 --exit-zero --max-complexity=10
 --max-line-length=88` pass — worth glancing at even though it can't fail the build.
+
+YAML files (workflows, issue templates, `mkdocs.yml`, `changelogs/config.yaml`, etc.) are
+linted by `yamllint` against the repo's `.yamllint` config, which extends `default` and
+turns nearly every optional rule on (2-space indentation enforced *inside* multi-line block
+scalars too, `---`/`...` document markers required, no bare `on:`/`yes`/`no` truthy values,
+no empty mapping values, 120-char line length). Two consequences worth knowing before editing
+workflow YAML:
+
+- Any multi-line `run: |` block must have **every line at the same indentation** as its
+  first line — `check-multi-line-strings` is on, so the usual convention of indenting a
+  shell `if`/`then` body an extra level, or continuation lines of a `\`-continued command,
+  will fail lint. Flatten shell blocks to one indentation level (bash doesn't care).
+- Where the embedded content *must* keep internal indentation to stay valid (e.g. the
+  Python heredoc in `release.yml`'s "Bump version in project files" step), wrap it in
+  `# yamllint disable rule:indentation` / `# yamllint enable rule:indentation` comments
+  placed outside the block scalar, rather than fighting the rule or weakening the config.
+- GitHub Actions' `on:` key must be quoted (`"on":`) — unquoted `on` is YAML 1.1 truthy
+  syntax for `true`, which `yamllint`'s `truthy` rule flags.
+- `changelogs/changelog.yaml` is excluded (`ignore:` in `.yamllint`) since antsibull-changelog
+  generates it.
 
 ## Changelog fragments — required for every non-trivial PR
 

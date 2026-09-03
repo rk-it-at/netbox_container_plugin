@@ -1,3 +1,4 @@
+---
 name: Question
 description: Ask a usage or design question
 title: "[Question]: "
@@ -25,4 +26,4 @@ body:
       placeholder: "NetBox version, plugin version, setup details"
     validations:
       required: false
-
+...

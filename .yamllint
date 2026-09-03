@@ -1,0 +1,84 @@
+---
+# Use the default (recommended) config as a base,
+# then override to be *as strict as possible*.
+extends: default
+
+# Ignore antisbull-changelog, as this is auto-generated
+ignore:
+  - changelogs/changelog.yaml
+
+rules:
+  # ----------------------------------------
+  # Formatting rules
+  # ----------------------------------------
+
+  # Maximum line length — your requested 120 chars
+  line-length:
+    max: 120
+    allow-non-breakable-words: false
+    allow-non-breakable-inline-mappings: false
+
+  # Force consistent indentation (2 spaces)
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: true
+
+  # Require consistent document start markers (---)
+  document-start:
+    present: true
+
+  # Require a document end marker (---)
+  # turn this on for maximum strictness
+  document-end:
+    present: true
+
+  # No trailing whitespace allowed
+  trailing-spaces: enable
+
+  # No newlines at the start of file
+  new-lines: enable
+
+  # Unix LF only
+  new-line-at-end-of-file: enable
+
+  # Disallow lines with too many spaces before comments
+  comments-indentation: enable
+
+
+  # ----------------------------------------
+  # Structural rules
+  # ----------------------------------------
+
+  # (Don't) Require keys to be sorted
+  key-ordering: disable
+
+  # Require truthy/falsy values to be canonical
+  truthy: enable
+
+  # Disallow empty values
+  empty-values:
+    forbid-in-block-mappings: true
+    forbid-in-flow-mappings: true
+    forbid-in-block-sequences: true
+
+  # Require explicit mapping values:
+  # key: value   not   key:value
+  colons:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Require spaces after commas
+  commas:
+    max-spaces-before: 0
+    max-spaces-after: 1
+
+  # Enforce proper braces/brackets spacing
+  brackets:
+    max-spaces-inside: 0
+
+  # Ensure proper hyphen spacing
+  hyphens:
+    max-spaces-after: 1
+
+...
