@@ -2,7 +2,6 @@ from netbox.views import generic
 from utilities.views import register_model_view
 
 from netbox_containers import filtersets, forms, models, tables
-from netbox_containers.models.volumes import VolumeDriverChoices
 
 __all__ = (
     "VolumeDeleteView",
@@ -19,11 +18,6 @@ class VolumeView(generic.ObjectView):
     filterset = filtersets.VolumeFilterSet
     template_name = "netbox_containers/volume.html"
     form = forms.VolumeForm
-
-    def get_extra_context(self, request, instance):
-        return {
-            "VolumeDriverChoices": VolumeDriverChoices,  # expose colors mapping to the template
-        }
 
 
 @register_model_view(models.Volume, "list", path="", detail=False)
