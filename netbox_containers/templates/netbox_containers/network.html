@@ -1,4 +1,5 @@
 {% extends 'generic/object.html' %}
+{% load netbox_containers_helpers %}
 
 {% block content %}
 <div class="row gx-3">
@@ -197,19 +198,7 @@
                 <tr>
                   <td><a href="{{ d.get_absolute_url }}">{{ d }}</a></td>
                   <td>
-                    {% with s=d.status %}
-                      {% if s == "active" %}
-                        <span class="badge text-bg-success rounded-pill">{{ d.get_status_display }}</span>
-                      {% elif s == "offline" %}
-                        <span class="badge text-bg-secondary rounded-pill">{{ d.get_status_display }}</span>
-                      {% elif s == "planned" or s == "staged" %}
-                        <span class="badge text-bg-info rounded-pill">{{ d.get_status_display }}</span>
-                      {% elif s == "failed" %}
-                        <span class="badge text-bg-danger rounded-pill">{{ d.get_status_display }}</span>
-                      {% else %}
-                        <span class="badge text-bg-light rounded-pill text-body">{{ d.get_status_display }}</span>
-                      {% endif %}
-                    {% endwith %}
+                    {% status_badge d.status d.get_status_display %}
                   </td>
                   <td>
                     {% if d.primary_ip4 %}
@@ -254,17 +243,7 @@
                 <tr>
                   <td><a href="{{ vm.get_absolute_url }}">{{ vm }}</a></td>
                   <td>
-                    {% with s=vm.status %}
-                      {% if s == "active" %}
-                        <span class="badge text-bg-success rounded-pill">{{ vm.get_status_display }}</span>
-                      {% elif s == "offline" %}
-                        <span class="badge text-bg-secondary rounded-pill">{{ vm.get_status_display }}</span>
-                      {% elif s == "planned" or s == "staged" %}
-                        <span class="badge text-bg-info rounded-pill">{{ vm.get_status_display }}</span>
-                      {% else %}
-                        <span class="badge text-bg-light rounded-pill text-body">{{ vm.get_status_display }}</span>
-                      {% endif %}
-                    {% endwith %}
+                    {% status_badge vm.status vm.get_status_display %}
                   </td>
                   <td>
                     {% if vm.primary_ip4 %}

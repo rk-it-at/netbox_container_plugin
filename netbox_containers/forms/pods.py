@@ -2,7 +2,6 @@ import json
 
 from dcim.models import Device
 from django import forms
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import (
     NetBoxModelBulkEditForm,
@@ -17,7 +16,7 @@ from utilities.forms.fields import (
 from utilities.forms.rendering import FieldSet
 from virtualization.models import VirtualMachine
 
-from netbox_containers.forms.containers import HOST_ENTRY_RE
+from netbox_containers.forms.fields import HOST_ENTRY_RE, LineListField
 from netbox_containers.models import Container, Pod
 
 __all__ = (
@@ -35,11 +34,13 @@ class PodForm(NetBoxModelForm):
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One mapping per line: host_port:container_port (e.g. 8080:80).",
     )
-    add_host_text = forms.CharField(
-        required=False,
+    add_host_text = LineListField(
         label="Add hosts",
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One per line: hostname:ip (maps to --add-host).",
+        line_regex=HOST_ENTRY_RE,
+        line_error="Invalid add-host entry. Use one per line in the form "
+        "hostname:ip. Bad entries: {bad}",
     )
     devices = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
@@ -93,22 +94,9 @@ class PodForm(NetBoxModelForm):
             widget = self.fields["infra_container"].widget
             widget.attrs["data-static-params"] = json.dumps(params)
             widget.attrs.pop("data-dynamic-params", None)
-            self.initial["add_host_text"] = "\n".join(self.instance.add_host or [])
+            self.initial["add_host_text"] = self.instance.add_host
         else:
             self.fields["infra_container"].queryset = Container.objects.none()
-
-    def clean_add_host_text(self):
-        raw = (self.cleaned_data.get("add_host_text") or "").strip()
-        if not raw:
-            return []
-        lines = [line.strip() for line in raw.splitlines() if line.strip()]
-        bad = [line for line in lines if not HOST_ENTRY_RE.match(line)]
-        if bad:
-            raise ValidationError(
-                "Invalid add-host entry. Use one per line in the form hostname:ip. "
-                f"Bad entries: {', '.join(bad[:5])}"
-            )
-        return lines
 
     def save(self, commit=True):
         obj = super().save(commit=False)

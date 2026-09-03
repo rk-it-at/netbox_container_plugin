@@ -33,16 +33,20 @@ netbox_containers/
                            images.py, volumes.py, mounts.py, secrets.py,
                            container_secrets.py, network_attachments.py), all
                            re-exported via models/__init__.py (star imports)
-  views/                  Same one-file-per-model split, generic.* based
+  views/                  Same one-file-per-model split, generic.* based, plus
+                           mixins.py (ParentLookupMixin, shared by the
+                           "add from parent" *CreateView classes)
   forms/                  Same split: <Model>Form, <Model>FilterForm,
                            <Model>BulkEditForm, plus ad-hoc *CreateForm/*EditForm for
-                           "add from parent" flows
+                           "add from parent" flows, plus fields.py (shared
+                           LineListField and its regexes)
   tables/                 django_tables2 / NetBoxTable per model
   filtersets/              django_filters / NetBoxModelFilterSet per model
   templates/netbox_containers/   Hand-written detail templates (extend
                            generic/object.html) + a couple of *_children.html that just
                            extend generic/object_children.html
-  templatetags/           netbox_containers_helpers.py — currently just render_boolean
+  templatetags/           netbox_containers_helpers.py — render_boolean and the
+                           shared status_badge tag for Device/VM status
   api/                    DRF serializers/views/urls, one ModelViewSet per model
   migrations/             Standard Django migrations
   tests/                  Django TestCase-based tests (currently model-level only)
@@ -79,20 +83,46 @@ collapsing files together.
   NetworkAttachment directly from a Container or Pod page) is handled by dedicated
   `*CreateView`/`*CreateForm` classes wired as plain (non-`register_model_view`) URL
   patterns in `urls.py`, e.g. `containers/<int:container_id>/mounts/add/`. These views
-  extract the parent id from `resolver_match` kwargs (with GET-param and regex-on-path
-  fallbacks) and inject it into the form/instance.
+  mix in `views.mixins.ParentLookupMixin` and call its `_get_parent_id(request,
+  kwarg_name, path_regex, get_param_names=())` to resolve the parent id (kwargs →
+  resolver_match → GET param → regex-on-path fallback), each exposing a thin
+  `_get_container_id`/`_get_pod_id` wrapper for readability at call sites. Add new
+  "add from parent" views on top of this mixin rather than re-copying the lookup chain.
 - `urls.py` builds the per-model URL includes via a small `get_urls(model_name,
   url_prefix)` helper wrapping `utilities.urls.get_model_urls`. Add new models by adding
   one line here, not by writing `path()` entries by hand.
+- Cross-field validation (e.g. "exactly one of container/pod", "uid/gid/mode only valid
+  for mount secrets") lives on the **model's** `clean()`, not on individual forms.
+  `ModelForm._post_clean()` calls `instance.full_clean()` automatically, so every form
+  for that model gets the same validation for free — including "add from parent" forms
+  that exclude the parent FK from `Meta.fields`, since the parent id is already set on
+  the instance (via the view's `get_object()`) before validation runs. Don't re-add a
+  `clean()` override to a form to duplicate a check the model already makes.
+- "One entry per line" text fields (`add_host_text`, `environment_text`, etc. — backed
+  by a model `JSONField(default=list)`) use `forms.fields.LineListField`, a
+  `forms.Field` that parses/validates newline-separated input into a list and renders a
+  list value back as text via `prepare_value`. Add a new such field with
+  `LineListField(line_regex=..., line_error="...")` rather than writing another
+  `clean_<field>_text` method by hand.
 - Detail templates extend `generic/object.html` and build panels as hand-written
   Bootstrap `card`/`row`/`col` markup rather than NetBox's higher-level panel/table
   helpers. `*_children.html` templates for tab views just extend
   `generic/object_children.html` with no overrides — keep that minimal pattern for new
-  child tabs.
-- `templatetags/netbox_containers_helpers.py` currently defines `render_boolean`; check
-  whether NetBox core's own `render_boolean` (`utilities/templatetags/builtins/filters.py`,
-  loaded via `{% load helpers %}`) can be used instead before adding more custom filters —
-  don't reimplement something NetBox core already provides.
+  child tabs. **When copying a detail template for a new model, delete panels for
+  relations the new model doesn't actually have** (e.g. a copy-pasted "Devices"/
+  "Virtual Machines"/"Pods" panel referencing `object.devices`/`object.pods` on a model
+  with no such field silently renders as "No devices associated." forever — Django
+  swallows the missing-attribute lookup instead of erroring, so this kind of dead panel
+  won't surface itself; grep the model before trusting a copied template).
+- The Devices/VM status badge (`active`/`offline`/`planned`/`staged`/`failed` → a
+  Bootstrap badge color) is rendered via the shared `{% status_badge status display %}`
+  tag in `netbox_containers_helpers.py`, used by Container/Pod/Network detail pages.
+  Add new statuses to `_STATUS_BADGE_CLASSES` there rather than hand-rolling another
+  if/elif chain in a template.
+- `render_boolean` in `templatetags/netbox_containers_helpers.py` may duplicate a
+  same-named filter NetBox core ships in `utilities/templatetags/builtins/filters.py`
+  (loaded via `{% load helpers %}`) — worth confirming against your NetBox version
+  before adding more custom filters here.
 
 ### Data model (high level)
 
@@ -101,19 +131,20 @@ collapsing files together.
   the pod)
 - `NetworkAttachment` → exactly one of `Container` or `Pod`, plus either a `Network` FK
   (mode=`network`) or free-form `options` (mode=`custom`), or nothing (mode=`none`/
-  `host`/`private`) — validated in both the model's `clean()` and the relevant form's
-  `clean()`
+  `host`/`private`) — validated once, in the model's `clean()` (see the cross-field
+  validation note above)
 - `Mount` → `Container` (FK) + either a `Volume` FK (mount_type=`volume`) or a
-  `host_path` string (mount_type=`bind`) — same dual model+form validation pattern
+  `host_path` string (mount_type=`bind`) — same model-only validation pattern
 - `ContainerSecret` → `Container` + `Secret`, `type` is `mount` or `env`; uid/gid/mode
-  only valid for `mount`
+  only valid for `mount` (validated on the model, same as above)
 - `Network`/`Container`/`Pod` all have `devices`/`virtual_machines` M2M to
-  `dcim.Device`/`virtualization.VirtualMachine`; `Network` also M2M to `ipam.Prefix`
+  `dcim.Device`/`virtualization.VirtualMachine`; `Network` also M2M to `ipam.Prefix`.
+  `Image`/`Volume` do **not** — see the template note above about not copy-pasting those
+  panels onto models without the relation.
 - Several fields (`environment`, `add_host`, `add_group`, `add_device` on `Container`;
   `add_host` on `Pod`) are stored as `JSONField(default=list)` but edited as newline-
-  separated text via a paired `<field>_text` form field with a `clean_<field>_text`
-  validator and a form-level `save()` override that copies the parsed list back onto the
-  model field.
+  separated text via a paired `<field>_text` `LineListField` and a form-level `save()`
+  override that copies the parsed list back onto the model field.
 
 ## Dev workflow
 

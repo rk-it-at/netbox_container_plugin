@@ -99,9 +99,6 @@ class Container(NetBoxModel):
     def __str__(self):
         return self.name
 
-    def get_container_status_color(self):
-        return ContainerStatusChoices.colors.get(self.status)
-
     def get_status_color(self):
         return ContainerStatusChoices.colors.get(self.status)
 

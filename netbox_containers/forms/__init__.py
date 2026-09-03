@@ -1,5 +1,6 @@
 from .container_secrets import *
 from .containers import *
+from .fields import *
 from .images import *
 from .mounts import *
 from .network_attachments import *

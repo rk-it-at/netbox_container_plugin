@@ -27,45 +27,8 @@ class NetworkAttachmentForm(NetBoxModelForm):
         model = NetworkAttachment
         fields = ("container", "pod", "mode", "network", "options", "tags")
 
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data
-        container = cleaned.get("container")
-        pod = cleaned.get("pod")
-        mode = cleaned.get("mode")
-        network = cleaned.get("network")
-        options = (cleaned.get("options") or "").strip()
-
-        if "container" in self.fields or "pod" in self.fields:
-            if bool(container) == bool(pod):
-                raise forms.ValidationError("Select either a container or a pod.")
-        else:
-            if bool(self.instance.container_id) == bool(self.instance.pod_id):
-                raise forms.ValidationError("Select either a container or a pod.")
-
-        if mode == NetworkAttachmentModeChoices.NETWORK:
-            if not network:
-                raise forms.ValidationError("Select a network for network mode.")
-            if options:
-                raise forms.ValidationError("Options must be empty for network mode.")
-
-        if mode == NetworkAttachmentModeChoices.CUSTOM:
-            if not options:
-                raise forms.ValidationError("Options must be set for options mode.")
-            if network:
-                raise forms.ValidationError("Network must be empty for options mode.")
-
-        if mode in (
-            NetworkAttachmentModeChoices.NONE,
-            NetworkAttachmentModeChoices.HOST,
-            NetworkAttachmentModeChoices.PRIVATE,
-        ):
-            if network:
-                raise forms.ValidationError("Network must be empty for this mode.")
-            if options:
-                raise forms.ValidationError("Options must be empty for this mode.")
-
-        return cleaned
+    # Mode/container/pod rules live in NetworkAttachment.clean() on the model,
+    # which ModelForm._post_clean() already runs for every form below.
 
 
 class NetworkAttachmentCreateForm(NetBoxModelForm):
@@ -82,37 +45,6 @@ class NetworkAttachmentCreateForm(NetBoxModelForm):
         self._container_id = kwargs.pop("container_id", None)
         self._pod_id = kwargs.pop("pod_id", None)
         super().__init__(*args, **kwargs)
-
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data
-        mode = cleaned.get("mode")
-        network = cleaned.get("network")
-        options = (cleaned.get("options") or "").strip()
-
-        if mode == NetworkAttachmentModeChoices.NETWORK:
-            if not network:
-                raise forms.ValidationError("Select a network for network mode.")
-            if options:
-                raise forms.ValidationError("Options must be empty for network mode.")
-
-        if mode == NetworkAttachmentModeChoices.CUSTOM:
-            if not options:
-                raise forms.ValidationError("Options must be set for options mode.")
-            if network:
-                raise forms.ValidationError("Network must be empty for options mode.")
-
-        if mode in (
-            NetworkAttachmentModeChoices.NONE,
-            NetworkAttachmentModeChoices.HOST,
-            NetworkAttachmentModeChoices.PRIVATE,
-        ):
-            if network:
-                raise forms.ValidationError("Network must be empty for this mode.")
-            if options:
-                raise forms.ValidationError("Options must be empty for this mode.")
-
-        return cleaned
 
     def save(self, commit=True):
         obj = super().save(commit=False)
@@ -145,34 +77,3 @@ class NetworkAttachmentEditForm(NetworkAttachmentForm):
         super().__init__(*args, **kwargs)
         self.fields.pop("container", None)
         self.fields.pop("pod", None)
-
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data
-        mode = cleaned.get("mode")
-        network = cleaned.get("network")
-        options = (cleaned.get("options") or "").strip()
-
-        if mode == NetworkAttachmentModeChoices.NETWORK:
-            if not network:
-                raise forms.ValidationError("Select a network for network mode.")
-            if options:
-                raise forms.ValidationError("Options must be empty for network mode.")
-
-        if mode == NetworkAttachmentModeChoices.CUSTOM:
-            if not options:
-                raise forms.ValidationError("Options must be set for options mode.")
-            if network:
-                raise forms.ValidationError("Network must be empty for options mode.")
-
-        if mode in (
-            NetworkAttachmentModeChoices.NONE,
-            NetworkAttachmentModeChoices.HOST,
-            NetworkAttachmentModeChoices.PRIVATE,
-        ):
-            if network:
-                raise forms.ValidationError("Network must be empty for this mode.")
-            if options:
-                raise forms.ValidationError("Options must be empty for this mode.")
-
-        return cleaned

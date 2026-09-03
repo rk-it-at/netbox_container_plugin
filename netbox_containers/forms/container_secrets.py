@@ -23,18 +23,8 @@ class ContainerSecretForm(NetBoxModelForm):
         model = ContainerSecret
         fields = ("container", "secret", "type", "target", "uid", "gid", "mode", "tags")
 
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data
-        ctype = cleaned.get("type")
-        uid = cleaned.get("uid")
-        gid = cleaned.get("gid")
-        mode = (cleaned.get("mode") or "").strip()
-        if ctype == ContainerSecretTypeChoices.ENV and (uid or gid or mode):
-            raise forms.ValidationError(
-                "UID/GID/Mode are only valid for mount secrets."
-            )
-        return cleaned
+    # The uid/gid/mode-vs-ENV rule lives in ContainerSecret.clean() on the
+    # model, which ModelForm._post_clean() already runs for every form below.
 
 
 class ContainerSecretCreateForm(NetBoxModelForm):
@@ -48,19 +38,6 @@ class ContainerSecretCreateForm(NetBoxModelForm):
     def __init__(self, *args, **kwargs):
         self._container_id = kwargs.pop("container_id", None)
         super().__init__(*args, **kwargs)
-
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data
-        ctype = cleaned.get("type")
-        uid = cleaned.get("uid")
-        gid = cleaned.get("gid")
-        mode = (cleaned.get("mode") or "").strip()
-        if ctype == ContainerSecretTypeChoices.ENV and (uid or gid or mode):
-            raise forms.ValidationError(
-                "UID/GID/Mode are only valid for mount secrets."
-            )
-        return cleaned
 
     def save(self, commit=True):
         obj = super().save(commit=False)
@@ -79,16 +56,3 @@ class ContainerSecretEditForm(NetBoxModelForm):
     class Meta:
         model = ContainerSecret
         fields = ("secret", "type", "target", "uid", "gid", "mode", "tags")
-
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data
-        ctype = cleaned.get("type")
-        uid = cleaned.get("uid")
-        gid = cleaned.get("gid")
-        mode = (cleaned.get("mode") or "").strip()
-        if ctype == ContainerSecretTypeChoices.ENV and (uid or gid or mode):
-            raise forms.ValidationError(
-                "UID/GID/Mode are only valid for mount secrets."
-            )
-        return cleaned
