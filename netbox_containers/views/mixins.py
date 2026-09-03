@@ -1,6 +1,12 @@
 import re
 
-__all__ = ("ParentLookupMixin",)
+from dcim.tables import DeviceTable
+from virtualization.tables import VirtualMachineTable
+
+__all__ = (
+    "ParentLookupMixin",
+    "RelatedDeviceVMTablesMixin",
+)
 
 
 class ParentLookupMixin:
@@ -26,3 +32,18 @@ class ParentLookupMixin:
             if match:
                 value = match.group("id")
         return int(value) if value else None
+
+
+class RelatedDeviceVMTablesMixin:
+    """Builds ready-to-render tables for a model's devices/virtual_machines M2M."""
+
+    def get_device_vm_tables(self, request, instance):
+        devices_table = DeviceTable(instance.devices.all(), prefix="devices-")
+        devices_table.configure(request)
+        devices_table.columns.hide("pk")
+
+        vms_table = VirtualMachineTable(instance.virtual_machines.all(), prefix="vms-")
+        vms_table.configure(request)
+        vms_table.columns.hide("pk")
+
+        return devices_table, vms_table

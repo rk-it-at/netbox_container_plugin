@@ -34,19 +34,21 @@ netbox_containers/
                            container_secrets.py, network_attachments.py), all
                            re-exported via models/__init__.py (star imports)
   views/                  Same one-file-per-model split, generic.* based, plus
-                           mixins.py (ParentLookupMixin, shared by the
-                           "add from parent" *CreateView classes)
+                           mixins.py (ParentLookupMixin for "add from parent"
+                           *CreateView classes; RelatedDeviceVMTablesMixin for
+                           the Devices/VMs render_table sub-tables)
   forms/                  Same split: <Model>Form, <Model>FilterForm,
                            <Model>BulkEditForm, plus ad-hoc *CreateForm/*EditForm for
                            "add from parent" flows, plus fields.py (shared
                            LineListField and its regexes)
   tables/                 django_tables2 / NetBoxTable per model
   filtersets/              django_filters / NetBoxModelFilterSet per model
-  templates/netbox_containers/   Hand-written detail templates (extend
-                           generic/object.html) + a couple of *_children.html that just
-                           extend generic/object_children.html
-  templatetags/           netbox_containers_helpers.py — render_boolean and the
-                           shared status_badge tag for Device/VM status
+  templates/netbox_containers/   Detail templates (extend generic/object.html),
+                           delegating Tags/Comments to NetBox's own
+                           inc/panels/*.html includes, + a couple of
+                           *_children.html that just extend generic/object_children.html
+  templatetags/           empty (init only) — no plugin-specific tags/filters
+                           needed; see "Use NetBox's own includes/tags" below
   api/                    DRF serializers/views/urls, one ModelViewSet per model
   migrations/             Standard Django migrations
   tests/                  Django TestCase-based tests (currently model-level only)
@@ -104,25 +106,73 @@ collapsing files together.
   list value back as text via `prepare_value`. Add a new such field with
   `LineListField(line_regex=..., line_error="...")` rather than writing another
   `clean_<field>_text` method by hand.
-- Detail templates extend `generic/object.html` and build panels as hand-written
-  Bootstrap `card`/`row`/`col` markup rather than NetBox's higher-level panel/table
-  helpers. `*_children.html` templates for tab views just extend
-  `generic/object_children.html` with no overrides — keep that minimal pattern for new
-  child tabs. **When copying a detail template for a new model, delete panels for
-  relations the new model doesn't actually have** (e.g. a copy-pasted "Devices"/
-  "Virtual Machines"/"Pods" panel referencing `object.devices`/`object.pods` on a model
-  with no such field silently renders as "No devices associated." forever — Django
-  swallows the missing-attribute lookup instead of erroring, so this kind of dead panel
-  won't surface itself; grep the model before trusting a copied template).
-- The Devices/VM status badge (`active`/`offline`/`planned`/`staged`/`failed` → a
-  Bootstrap badge color) is rendered via the shared `{% status_badge status display %}`
-  tag in `netbox_containers_helpers.py`, used by Container/Pod/Network detail pages.
-  Add new statuses to `_STATUS_BADGE_CLASSES` there rather than hand-rolling another
-  if/elif chain in a template.
-- `render_boolean` in `templatetags/netbox_containers_helpers.py` may duplicate a
-  same-named filter NetBox core ships in `utilities/templatetags/builtins/filters.py`
-  (loaded via `{% load helpers %}`) — worth confirming against your NetBox version
-  before adding more custom filters here.
+- Detail templates extend `generic/object.html` and still build the object's own
+  field-attribute panel as hand-written Bootstrap `card`/`row`/`col` markup — NetBox
+  core does the same thing in its own templates (there's no generic "auto panel" for
+  a model's own fields; core apps hand-write an `attr-table` for that too). `*_children.html`
+  templates for tab views just extend `generic/object_children.html` with no
+  overrides — keep that minimal pattern for new child tabs. **When copying a detail
+  template for a new model, delete panels for relations the new model doesn't
+  actually have** (e.g. a copy-pasted "Devices"/"Virtual Machines"/"Pods" panel
+  referencing `object.devices`/`object.pods` on a model with no such field silently
+  renders as "No devices associated." forever — Django swallows the missing-attribute
+  lookup instead of erroring, so this kind of dead panel won't surface itself; grep the
+  model before trusting a copied template).
+- **Use NetBox's own includes/tags instead of hand-rolling these** (verified against
+  NetBox core v4.4–v4.6 source):
+  - Tags panel → `{% include 'inc/panels/tags.html' %}` (needs `object` in context,
+    which every detail template already has). Renders each tag via NetBox's own
+    `{% tag %}` builtin, which respects the tag's actual assigned color — a hand-rolled
+    `text-bg-primary` pill hardcodes one color for every tag regardless of what's set.
+  - Comments panel → `{% include 'inc/panels/comments.html' %}`. Renders
+    `object.comments` through NetBox's `markdown` filter — a hand-rolled `<div
+    style="white-space:pre-wrap;">` shows plain text only, silently dropping any
+    Markdown formatting `CommentField` is meant to support.
+  - Boolean check/X icon (e.g. `is_infra`) → `{% checkmark object.is_infra %}`, a
+    Django template **builtin** (`utilities.templatetags.builtins.tags`, registered in
+    NetBox's `TEMPLATES` `OPTIONS.builtins`) — no `{% load %}` needed, available in
+    every template automatically.
+  - Every related-object sub-table on a detail page (Devices/VMs on Container/Pod/
+    Network; Mounts/Secrets/Networks on Container; Containers/Networks on Pod;
+    Pods/Containers on Network) is a real table instance —
+    `dcim.tables.DeviceTable`, `virtualization.tables.VirtualMachineTable`, or one of
+    this plugin's own `tables.py` classes (`MountTable`, `ContainerSecretTable`,
+    `NetworkAttachmentTable`, `ContainerTable`, `PodTable`) — built in the view's
+    `get_extra_context()` and rendered via `{% load render_table from django_tables2 %}`
+    and `{% render_table sometable %}`, the same mechanism NetBox core uses for an
+    inline related-object table (e.g. `dcim/virtualdevicecontext.html`). This gets correct
+    status colors, linkification, sorting and column choice for free instead of a
+    hand-rolled `<table>`. Rules of thumb when adding one:
+    - **Prefix every table instance** (`DeviceTable(qs, prefix="devices-")`) so its
+      sort/pagination query params don't collide with another table on the same page —
+      `RelatedDeviceVMTablesMixin.get_device_vm_tables()` in `views/mixins.py` already
+      does this for Devices/VMs; do the same for any new one.
+    - **Hide the column that just points back at the page you're on** (e.g.
+      `containers_table.columns.hide("pod")` on a Pod's own Containers panel,
+      `networks_table.columns.hide("container")` + `.hide("pod")` on a
+      Container's/Pod's own Networks panel) — self-referential columns add nothing.
+      `pk` (bulk-select) also gets hidden for `DeviceTable`/`VirtualMachineTable`
+      specifically, since these are inline snippets without a bulk-action form; the
+      plugin's own tables don't default-show `pk` so no extra hide is needed for them.
+    - **If the table has a `LinkedCountColumn` in `default_columns`** (`ContainerTable`'s
+      `device_count`/`vm_count`, `PodTable`'s `container_count`/`device_count`/
+      `vm_count`) — those columns read an annotation (e.g. `Count("devices",
+      distinct=True)`) that only exists if you put it on the queryset yourself; the
+      table's own `get_queryset()` method is dead code (never called outside its own
+      `*ListView`, which already annotates independently) — don't rely on it, replicate
+      the `.annotate(...)` calls from the matching `*ListView.queryset` when building the
+      table elsewhere (see `PodView`/`NetworkView.get_extra_context()`).
+  - For any *other* status field you display outside a NetBoxTable-based table (i.e.
+    you can't use `ChoiceFieldColumn`), the equivalent inline markup is `<span
+    class="badge text-bg-{{ obj.get_status_color }}">{{ obj.get_status_display
+    }}</span>` — `get_status_color()` follows the same `get_<field>_color()`
+    convention this plugin's own `Container`/`Pod` use, and returns one of NetBox's
+    extended palette names (`green`/`cyan`/`red`/`purple`/`yellow`/`gray`, not plain
+    Bootstrap semantic names) — don't hand-roll an if/elif status→color chain.
+  - NetBox core has no `render_boolean` filter (`checkmark` above is the real native
+    equivalent) and no generic "panel" tag for arbitrary related-object tables beyond
+    tags/comments/custom_fields — `django_tables2`'s `render_table` (above) is the
+    closest thing, and requires an actual `Table` instance from the view.
 
 ### Data model (high level)
 

@@ -1,6 +1,5 @@
 {% extends 'generic/object.html' %}
-{% load helpers %}
-{% load netbox_containers_helpers %}
+{% load render_table from django_tables2 %}
 
 {% block extra_controls %}
   {{ block.super }}
@@ -86,34 +85,10 @@
       </div>
     </div>
 
-    {# --- Tags panel --- #}
-    <div class="card mb-3">
-      <h5 class="card-header">Tags</h5>
-      <div class="card-body">
-        {% if object.tags.count %}
-          <div class="d-flex flex-wrap gap-2">
-            {% for tag in object.tags.all %}
-            <a class="badge text-bg-primary rounded-pill text-decoration-none"
-              href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
-            {% endfor %}
-          </div>
-        {% else %}
-          <span class="text-muted">No tags</span>
-        {% endif %}
-      </div>
+    <div class="mb-3">
+      {% include 'inc/panels/tags.html' %}
     </div>
-
-    {# --- Comments panel --- #}
-    <div class="card">
-      <h5 class="card-header">Comments</h5>
-      <div class="card-body">
-        {% if object.comments %}
-          <div style="white-space:pre-wrap;">{{ object.comments }}</div>
-        {% else %}
-          <span class="text-muted">No comments</span>
-        {% endif %}
-      </div>
-    </div>
+    {% include 'inc/panels/comments.html' %}
   </div>
 
   {# ================= RIGHT COLUMN ================= #}
@@ -124,35 +99,8 @@
       <h5 class="card-header">
         Networks
       </h5>
-      <div class="card-body">
-        {% if object.network_attachments.exists %}
-          <div class="table-responsive">
-            <table class="table table-hover table-headings">
-              <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Network / Options</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for att in object.network_attachments.all %}
-                <tr>
-                  <td>{{ att.get_mode_display }}</td>
-                  <td>
-                    {% if att.network %}
-                      <a href="{{ att.network.get_absolute_url }}">{{ att.network }}</a>
-                    {% else %}
-                      {{ att.options|default:"—" }}
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <span class="text-muted">No networks associated.</span>
-        {% endif %}
+      <div class="table-responsive">
+        {% render_table networks_table %}
       </div>
     </div>
 
@@ -161,39 +109,8 @@
       <h5 class="card-header">
         Containers
       </h5>
-      <div class="card-body">
-        {% if object.containers.exists %}
-          <div class="table-responsive">
-            <table class="table table-hover table-headings">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Image</th>
-                  <th>Infra</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for c in object.containers.all|dictsort:"name" %}
-                <tr>
-                  <td><a href="{{ c.get_absolute_url }}">{{ c }}</a></td>
-                  <td>{{ c.get_status_display|default:"—" }}</td>
-                  <td>
-                    {% if c.image_tag %}
-                      {{ c.image_tag }}
-                    {% else %}
-                      <span class="text-muted">—</span>
-                    {% endif %}
-                  </td>
-                  <td>{{ c.is_infra|render_boolean }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <span class="text-muted">No containers associated.</span>
-        {% endif %}
+      <div class="table-responsive">
+        {% render_table containers_table %}
       </div>
     </div>
 
@@ -202,43 +119,8 @@
       <h5 class="card-header">
         Devices
       </h5>
-      <div class="card-body">
-        {% if object.devices.exists %}
-          <div class="table-responsive">
-            <table class="table table-hover table-headings">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Primary IPv4</th>
-                  <th>Primary IPv6</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for d in object.devices.all|dictsort:"name" %}
-                <tr>
-                  <td><a href="{{ d.get_absolute_url }}">{{ d }}</a></td>
-                  <td>
-                    {% status_badge d.status d.get_status_display %}
-                  </td>
-                  <td>
-                    {% if d.primary_ip4 %}
-                      <a href="{{ d.primary_ip4.get_absolute_url }}">{{ d.primary_ip4 }}</a>
-                    {% else %}<span class="text-muted">—</span>{% endif %}
-                  </td>
-                  <td>
-                    {% if d.primary_ip6 %}
-                      <a href="{{ d.primary_ip6.get_absolute_url }}">{{ d.primary_ip6 }}</a>
-                    {% else %}<span class="text-muted">—</span>{% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <span class="text-muted">No devices associated.</span>
-        {% endif %}
+      <div class="table-responsive">
+        {% render_table devices_table %}
       </div>
     </div>
 
@@ -247,43 +129,8 @@
       <h5 class="card-header">
         Virtual Machines
       </h5>
-      <div class="card-body">
-        {% if object.virtual_machines.exists %}
-          <div class="table-responsive">
-            <table class="table table-hover table-headings">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Primary IPv4</th>
-                  <th>Primary IPv6</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for vm in object.virtual_machines.all|dictsort:"name" %}
-                <tr>
-                  <td><a href="{{ vm.get_absolute_url }}">{{ vm }}</a></td>
-                  <td>
-                    {% status_badge vm.status vm.get_status_display %}
-                  </td>
-                  <td>
-                    {% if vm.primary_ip4 %}
-                      <a href="{{ vm.primary_ip4.get_absolute_url }}">{{ vm.primary_ip4 }}</a>
-                    {% else %}<span class="text-muted">—</span>{% endif %}
-                  </td>
-                  <td>
-                    {% if vm.primary_ip6 %}
-                      <a href="{{ vm.primary_ip6.get_absolute_url }}">{{ vm.primary_ip6 }}</a>
-                    {% else %}<span class="text-muted">—</span>{% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        {% else %}
-          <span class="text-muted">No virtual machines associated.</span>
-        {% endif %}
+      <div class="table-responsive">
+        {% render_table vms_table %}
       </div>
     </div>
 

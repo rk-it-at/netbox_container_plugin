@@ -7,6 +7,7 @@ from netbox_containers import filtersets, forms, models, tables
 from netbox_containers.models.containers import ContainerStatusChoices
 from netbox_containers.tables.container_secrets import ContainerSecretTable
 from netbox_containers.tables.mounts import MountTable
+from netbox_containers.views.mixins import RelatedDeviceVMTablesMixin
 
 __all__ = (
     "ContainerDeleteView",
@@ -18,7 +19,7 @@ __all__ = (
 
 
 @register_model_view(models.Container)
-class ContainerView(generic.ObjectView):
+class ContainerView(RelatedDeviceVMTablesMixin, generic.ObjectView):
     queryset = models.Container.objects.prefetch_related(
         "mounts__volume",
         "network_attachments__network",
@@ -58,15 +59,29 @@ class ContainerView(generic.ObjectView):
         ]
 
     def get_extra_context(self, request, instance):
-        mounts = instance.mounts.all()
-        mounts_table = MountTable(mounts)
+        mounts_table = MountTable(instance.mounts.all(), prefix="mounts-")
         mounts_table.configure(request)
-        secrets_table = ContainerSecretTable(instance.secrets.all())
+        mounts_table.columns.hide("container")
+
+        secrets_table = ContainerSecretTable(instance.secrets.all(), prefix="secrets-")
         secrets_table.configure(request)
+        secrets_table.columns.hide("container")
+
+        networks_table = tables.NetworkAttachmentTable(
+            instance.network_attachments.all(), prefix="networks-"
+        )
+        networks_table.configure(request)
+        networks_table.columns.hide("container")
+        networks_table.columns.hide("pod")
+
+        devices_table, vms_table = self.get_device_vm_tables(request, instance)
 
         return {
             "mounts_table": mounts_table,
             "secrets_table": secrets_table,
+            "networks_table": networks_table,
+            "devices_table": devices_table,
+            "vms_table": vms_table,
             "ContainerStatusChoices": ContainerStatusChoices,  # expose colors mapping to the template
         }
 

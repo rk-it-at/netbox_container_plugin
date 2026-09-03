@@ -3,6 +3,7 @@ from netbox.views import generic
 from utilities.views import register_model_view
 
 from netbox_containers import filtersets, forms, models, tables
+from netbox_containers.views.mixins import RelatedDeviceVMTablesMixin
 
 __all__ = (
     "NetworkDeleteView",
@@ -13,7 +14,7 @@ __all__ = (
 
 
 @register_model_view(models.Network)
-class NetworkView(generic.ObjectView):
+class NetworkView(RelatedDeviceVMTablesMixin, generic.ObjectView):
     queryset = models.Network.objects.prefetch_related(
         "attachments__pod",
         "attachments__container",
@@ -23,13 +24,35 @@ class NetworkView(generic.ObjectView):
     template_name = "netbox_containers/network.html"
 
     def get_extra_context(self, request, instance):
+        pod_ids = instance.attachments.filter(pod__isnull=False).values_list(
+            "pod_id", flat=True
+        )
+        pods_table = tables.PodTable(
+            models.Pod.objects.filter(pk__in=pod_ids)
+            .annotate(container_count=Count("containers", distinct=True))
+            .annotate(device_count=Count("devices", distinct=True))
+            .annotate(vm_count=Count("virtual_machines", distinct=True)),
+            prefix="pods-",
+        )
+        pods_table.configure(request)
+
+        container_ids = instance.attachments.filter(
+            container__isnull=False
+        ).values_list("container_id", flat=True)
+        containers_table = tables.ContainerTable(
+            models.Container.objects.filter(pk__in=container_ids)
+            .annotate(device_count=Count("devices", distinct=True))
+            .annotate(vm_count=Count("virtual_machines", distinct=True)),
+            prefix="containers-",
+        )
+        containers_table.configure(request)
+
+        devices_table, vms_table = self.get_device_vm_tables(request, instance)
         return {
-            "pod_attachments": instance.attachments.filter(
-                pod__isnull=False
-            ).select_related("pod"),
-            "container_attachments": instance.attachments.filter(
-                container__isnull=False
-            ).select_related("container"),
+            "pods_table": pods_table,
+            "containers_table": containers_table,
+            "devices_table": devices_table,
+            "vms_table": vms_table,
         }
 
 
