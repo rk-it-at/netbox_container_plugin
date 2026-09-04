@@ -210,12 +210,57 @@ python /opt/netbox/netbox/manage.py migrate netbox_containers
 # restart NetBox after every change if testing against a remote/deployed instance
 ```
 
-Run the plugin's own tests with Django's test runner from inside a NetBox install (there's
-no standalone test settings module in this repo):
+### Tests
+
+`netbox_containers/tests/` covers models (validation/`clean()` for every model that has
+it), forms (`LineListField`, the model-delegated cross-field validation, "add from
+parent" forms), views (a render smoke test for every detail/list page — this is what
+catches template bugs like a bad `{% render_table %}` call or a missing context
+variable), and the REST API (list/create per ViewSet). There's no standalone test
+settings module in this repo — the suite needs a real NetBox install (its own
+`INSTALLED_APPS`, `dcim`/`virtualization`/`extras`/etc. all migrated) to run at all, so
+`python manage.py test netbox_containers` only works run from *inside* a NetBox
+checkout, not from this repo directly.
+
+To spin up a disposable NetBox instance for running these (no Docker Compose file is
+checked in here; this is the fastest path that doesn't touch your real deployment):
 
 ```bash
-python manage.py test netbox_containers
+# 1. Throwaway Postgres + Redis (NetBox requires both even for `test`)
+podman run -d --name nbtest-pg -e POSTGRES_USER=netbox -e POSTGRES_PASSWORD=netbox \
+  -e POSTGRES_DB=netbox -p 15432:5432 docker.io/library/postgres:16-alpine
+podman run -d --name nbtest-redis -p 16379:6379 docker.io/library/redis:7-alpine
+
+# 2. A NetBox release inside the plugin's supported range (see min_version/max_version
+#    in netbox_containers/__init__.py) - here v4.6.10
+curl -sL https://github.com/netbox-community/netbox/archive/refs/tags/v4.6.10.tar.gz \
+  | tar xz && mv netbox-4.6.10 netbox
+
+# 3. Venv with NetBox's own requirements plus this plugin, editable
+python3 -m venv venv
+sed -i -e 's/psycopg\[c,pool\]/psycopg[binary,pool]/' netbox/requirements.txt  # skip libpq-dev
+./venv/bin/pip install -r netbox/requirements.txt
+./venv/bin/pip install -e /path/to/netbox_container_plugin
+
+# 4. Minimal configuration.py (netbox/netbox/netbox/configuration.py) pointing at the
+#    containers above, with PLUGINS = ["netbox_containers"] and any SECRET_KEY
+#    (>= 50 chars). Then:
+./venv/bin/python netbox/netbox/manage.py migrate
+./venv/bin/python netbox/netbox/manage.py test netbox_containers --keepdb
 ```
+
+`--keepdb` matters here: NetBox has ~130 core migrations, so the first test-db creation
+takes a while — keep it and every later run is seconds. Tear down the two containers
+(`podman rm -f nbtest-pg nbtest-redis`) when done; nothing here should be left running.
+
+This is worth doing before trusting a change that touches templates, forms, or views —
+`ruff`/`compileall`/a standalone Django template render can catch syntax errors, but only
+a real NetBox instance catches things like `utilities.choices.ChoiceSetMeta` requiring
+`CHOICES` to be an actual `list` (not a tuple) because NetBox mutates it in place for
+admin-configured `FIELD_CHOICES` overrides — a real regression this exact setup caught
+after an earlier ruff-driven cleanup pass switched `CHOICES` to tuples for a different
+lint rule (`RUF012`); it now uses `CHOICES: ClassVar[list] = [...]` in `constants.py`
+instead, satisfying both the framework and the linter.
 
 ### Linting (must pass before pushing — mirrors CI)
 
