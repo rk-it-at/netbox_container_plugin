@@ -1,21 +1,21 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import (
-    NetBoxModelForm,
-    NetBoxModelFilterSetForm,
     NetBoxModelBulkEditForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelForm,
 )
-from utilities.forms.fields import DynamicModelChoiceField, CommentField
+from utilities.forms.fields import CommentField, DynamicModelChoiceField
 from utilities.forms.rendering import FieldSet
+
 from netbox_containers.models import Image, ImageTag
 
-
 __all__ = (
-    "ImageForm",
-    "ImageTagForm",
-    "ImageFilterForm",
-    "ImageTagFilterForm",
     "ImageBulkEditForm",
+    "ImageFilterForm",
+    "ImageForm",
+    "ImageTagFilterForm",
+    "ImageTagForm",
 )
 
 
@@ -24,7 +24,7 @@ class ImageForm(NetBoxModelForm):
 
     class Meta:
         model = Image
-        fields = ["name", "registry", "default_tag", "tags", "comments"]
+        fields = ("name", "registry", "default_tag", "tags", "comments")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

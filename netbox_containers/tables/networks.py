@@ -1,8 +1,8 @@
 import django_tables2 as tables
 from django.db.models import Count, Q
 from netbox.tables import NetBoxTable, columns
-from netbox_containers.models import Network
 
+from netbox_containers.models import Network
 
 __all__ = ("NetworkTable",)
 

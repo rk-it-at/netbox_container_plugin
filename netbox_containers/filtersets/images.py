@@ -1,7 +1,7 @@
 import django_filters as filters
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_containers.models import Image, ImageTag
 
+from netbox_containers.models import Image, ImageTag
 
 __all__ = (
     "ImageFilterSet",

@@ -1,21 +1,23 @@
+from typing import ClassVar
+
 from utilities.choices import ChoiceSet
 
 
 class PodStatusChoices(ChoiceSet):
     key = "Pod.status"
-    CHOICES = [
+    CHOICES: ClassVar[list] = [
         ("created", "Created", "gray"),
         ("running", "Running", "green"),
         ("stopped", "Stopped", "yellow"),
         ("exited", "Exited", "orange"),
         ("dead", "Dead", "red"),
     ]
-    colors = {v: c for v, _, c in CHOICES}
+    colors: ClassVar[dict] = {v: c for v, _, c in CHOICES}
 
 
 class ContainerStatusChoices(ChoiceSet):
     key = "Container.status"
-    CHOICES = [
+    CHOICES: ClassVar[list] = [
         ("created", "Created", "gray"),
         ("initialized", "Initialized", "gray"),
         ("running", "Running", "green"),
@@ -23,12 +25,12 @@ class ContainerStatusChoices(ChoiceSet):
         ("exited", "Exited", "orange"),
         ("unknown", "Unknown", "red"),
     ]
-    colors = {v: c for v, _, c in CHOICES}
+    colors: ClassVar[dict] = {v: c for v, _, c in CHOICES}
 
 
 class NetworkDriverChoices(ChoiceSet):
     key = "Network.driver"
-    CHOICES = [
+    CHOICES: ClassVar[list] = [
         ("bridge", "Bridge"),
         ("macvlan", "macvlan"),
         ("ipvlan", "ipvlan"),
@@ -37,7 +39,7 @@ class NetworkDriverChoices(ChoiceSet):
 
 class ImageArchChoices(ChoiceSet):
     key = "ImageTag.arch"
-    CHOICES = [
+    CHOICES: ClassVar[list] = [
         ("amd64", "amd64"),
         ("arm64", "arm64"),
         ("armv7", "arm/v7"),
@@ -49,7 +51,7 @@ class ImageArchChoices(ChoiceSet):
 
 class ImageOSChoices(ChoiceSet):
     key = "ImageTag.os"
-    CHOICES = [
+    CHOICES: ClassVar[list] = [
         ("linux", "Linux"),
         ("windows", "Windows"),
     ]
@@ -57,7 +59,7 @@ class ImageOSChoices(ChoiceSet):
 
 class VolumeDriverChoices(ChoiceSet):
     key = "Volume.driver"
-    CHOICES = [
+    CHOICES: ClassVar[list] = [
         ("local", "local"),
         ("image", "image"),
     ]

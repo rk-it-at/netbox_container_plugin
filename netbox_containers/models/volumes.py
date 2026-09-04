@@ -1,8 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
-from netbox_containers.constants import VolumeDriverChoices
 
+from netbox_containers.constants import VolumeDriverChoices
 
 __all__ = ("Volume",)
 
@@ -24,9 +24,6 @@ class Volume(NetBoxModel):
 
     def __str__(self):
         return self.name
-
-    def get_volume_driver_color(self):
-        return VolumeDriverChoices.colors.get(self.status)
 
     def get_absolute_url(self):
         return reverse("plugins:netbox_containers:volume", args=[self.pk])

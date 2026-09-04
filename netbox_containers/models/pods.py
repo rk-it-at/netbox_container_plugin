@@ -2,8 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
-from netbox_containers.constants import PodStatusChoices
 
+from netbox_containers.constants import PodStatusChoices
 
 __all__ = ("Pod",)
 

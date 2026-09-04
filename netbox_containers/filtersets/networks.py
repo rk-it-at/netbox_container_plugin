@@ -1,12 +1,12 @@
 import django_filters as filters
-from django_filters import CharFilter, ModelMultipleChoiceFilter
-from netbox.filtersets import NetBoxModelFilterSet
 from dcim.models import Device
-from virtualization.models import VirtualMachine
+from django_filters import CharFilter, ModelMultipleChoiceFilter
 from ipam.models import Prefix
+from netbox.filtersets import NetBoxModelFilterSet
+from virtualization.models import VirtualMachine
+
 from netbox_containers import models
 from netbox_containers.models import Network
-
 
 __all__ = ("NetworkFilterSet",)
 

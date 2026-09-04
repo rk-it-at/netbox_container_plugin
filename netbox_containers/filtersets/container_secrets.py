@@ -1,8 +1,8 @@
 import django_filters as filters
 from django_filters import CharFilter
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_containers.models import ContainerSecret
 
+from netbox_containers.models import ContainerSecret
 
 __all__ = ("ContainerSecretFilterSet",)
 

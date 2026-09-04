@@ -1,21 +1,22 @@
 from django.db.models import Count
 from netbox.views import generic
 from utilities.views import ViewTab, register_model_view
-from netbox_containers import forms, models, tables, filtersets
-from netbox_containers.models.pods import PodStatusChoices
 
+from netbox_containers import filtersets, forms, models, tables
+from netbox_containers.models.pods import PodStatusChoices
+from netbox_containers.views.mixins import RelatedDeviceVMTablesMixin
 
 __all__ = (
-    "PodView",
-    "PodListView",
-    "PodEditView",
     "PodDeleteView",
+    "PodEditView",
+    "PodListView",
     "PodNetworkAttachmentListView",
+    "PodView",
 )
 
 
 @register_model_view(models.Pod)
-class PodView(generic.ObjectView):
+class PodView(RelatedDeviceVMTablesMixin, generic.ObjectView):
     queryset = models.Pod.objects.prefetch_related(
         "network_attachments__network",
     )
@@ -25,7 +26,28 @@ class PodView(generic.ObjectView):
     form = forms.PodForm
 
     def get_extra_context(self, request, instance):
+        containers_table = tables.ContainerTable(
+            instance.containers.annotate(
+                device_count=Count("devices", distinct=True)
+            ).annotate(vm_count=Count("virtual_machines", distinct=True)),
+            prefix="containers-",
+        )
+        containers_table.configure(request)
+        containers_table.columns.hide("pod")
+
+        networks_table = tables.NetworkAttachmentTable(
+            instance.network_attachments.all(), prefix="networks-"
+        )
+        networks_table.configure(request)
+        networks_table.columns.hide("container")
+        networks_table.columns.hide("pod")
+
+        devices_table, vms_table = self.get_device_vm_tables(request, instance)
         return {
+            "containers_table": containers_table,
+            "networks_table": networks_table,
+            "devices_table": devices_table,
+            "vms_table": vms_table,
             "PodStatusChoices": PodStatusChoices,  # expose colors mapping to the template
         }
 

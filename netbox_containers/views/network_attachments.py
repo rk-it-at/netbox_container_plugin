@@ -1,19 +1,19 @@
-import re
 from django.urls import reverse
 from netbox.views import generic
 from utilities.views import register_model_view
-from netbox_containers import forms, models, tables, filtersets
 
+from netbox_containers import filtersets, forms, models, tables
+from netbox_containers.views.mixins import ParentLookupMixin
 
 __all__ = (
-    "NetworkAttachmentView",
-    "NetworkAttachmentListView",
-    "NetworkAttachmentContainerListView",
-    "NetworkAttachmentPodListView",
     "NetworkAttachmentAddView",
-    "NetworkAttachmentEditView",
-    "NetworkAttachmentDeleteView",
+    "NetworkAttachmentContainerListView",
     "NetworkAttachmentCreateView",
+    "NetworkAttachmentDeleteView",
+    "NetworkAttachmentEditView",
+    "NetworkAttachmentListView",
+    "NetworkAttachmentPodListView",
+    "NetworkAttachmentView",
 )
 
 
@@ -79,35 +79,23 @@ class NetworkAttachmentAddView(generic.ObjectEditView):
     form = forms.NetworkAttachmentForm
 
 
-class NetworkAttachmentCreateView(generic.ObjectEditView):
+class NetworkAttachmentCreateView(ParentLookupMixin, generic.ObjectEditView):
     queryset = models.NetworkAttachment.objects.all()
     form = forms.NetworkAttachmentCreateForm
     template_name = "netbox_containers/network_attachment_edit.html"
     default_return_url = "plugins:netbox_containers:container"
 
     def _get_container_id(self, request):
-        container_id = self.kwargs.get("container_id")
-        if not container_id and request.resolver_match:
-            container_id = request.resolver_match.kwargs.get("container_id")
-        if not container_id:
-            match = re.search(
-                r"/containers/(?P<cid>\\d+)/network-attachments/add/?", request.path
-            )
-            if match:
-                container_id = match.group("cid")
-        return int(container_id) if container_id else None
+        return self._get_parent_id(
+            request,
+            "container_id",
+            r"/containers/(?P<id>\d+)/network-attachments/add/?",
+        )
 
     def _get_pod_id(self, request):
-        pod_id = self.kwargs.get("pod_id")
-        if not pod_id and request.resolver_match:
-            pod_id = request.resolver_match.kwargs.get("pod_id")
-        if not pod_id:
-            match = re.search(
-                r"/pods/(?P<pid>\\d+)/network-attachments/add/?", request.path
-            )
-            if match:
-                pod_id = match.group("pid")
-        return int(pod_id) if pod_id else None
+        return self._get_parent_id(
+            request, "pod_id", r"/pods/(?P<id>\d+)/network-attachments/add/?"
+        )
 
     def get_object(self, queryset=None, **kwargs):
         container_id = self._get_container_id(self.request)
