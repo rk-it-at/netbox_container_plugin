@@ -1,0 +1,7 @@
+---
+
+minor_changes:
+  # yamllint disable-line rule:line-length
+  - "Add tab for containers to virtual machines and devices (https://github.com/rk-it-at/netbox_container_plugin/issues/1)"
+
+...
