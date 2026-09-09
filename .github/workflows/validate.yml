@@ -76,7 +76,7 @@ jobs:
       - name: Check syntax validity
         run: |
           echo "Checking Python syntax..."
-          python -m compileall .
+          python3 -m compileall .
 
       - name: Run flake8 (PEP8 style guide)
         run: |
