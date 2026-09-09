@@ -1,16 +1,16 @@
-import re
 from django.urls import reverse
 from netbox.views import generic
 from utilities.views import register_model_view
-from netbox_containers import forms, models, tables, filtersets
 
+from netbox_containers import filtersets, forms, models, tables
+from netbox_containers.views.mixins import ParentLookupMixin
 
 __all__ = (
-    "MountView",
-    "MountListView",
-    "MountEditView",
-    "MountDeleteView",
     "MountCreateView",
+    "MountDeleteView",
+    "MountEditView",
+    "MountListView",
+    "MountView",
 )
 
 
@@ -41,7 +41,7 @@ class MountDeleteView(generic.ObjectDeleteView):
     queryset = models.Mount.objects.all()
 
 
-class MountCreateView(generic.ObjectEditView):
+class MountCreateView(ParentLookupMixin, generic.ObjectEditView):
     queryset = models.Mount.objects.all()
     table = tables.MountTable
     filterset = filtersets.MountFilterSet
@@ -57,18 +57,12 @@ class MountCreateView(generic.ObjectEditView):
         return models.Mount()
 
     def _get_container_id(self, request):
-        container_id = self.kwargs.get("container_id")
-        if not container_id and request.resolver_match:
-            container_id = request.resolver_match.kwargs.get("container_id")
-        if not container_id:
-            container_id = request.GET.get("container_id") or request.GET.get(
-                "container"
-            )
-        if not container_id:
-            match = re.search(r"/containers/(?P<cid>\\d+)/mounts/add/?", request.path)
-            if match:
-                container_id = match.group("cid")
-        return int(container_id) if container_id else None
+        return self._get_parent_id(
+            request,
+            "container_id",
+            r"/containers/(?P<id>\d+)/mounts/add/?",
+            get_param_names=("container_id", "container"),
+        )
 
     def get_initial(self):
         initial = super().get_initial()

@@ -1,9 +1,9 @@
+from django.core.validators import RegexValidator
 from django.db import models
 from django.urls import reverse
-from django.core.validators import RegexValidator
 from netbox.models import NetBoxModel
-from netbox_containers.constants import ImageArchChoices, ImageOSChoices
 
+from netbox_containers.constants import ImageArchChoices, ImageOSChoices
 
 __all__ = ("Image", "ImageTag")
 
@@ -26,11 +26,11 @@ class Image(NetBoxModel):
         verbose_name = "Image"
         verbose_name_plural = "Images"
         ordering = ("registry", "name", "pk")
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=["registry", "name"], name="uniq_image_registry_name"
-            )
-        ]
+            ),
+        )
 
     def __str__(self):
         return f"{self.registry}/{self.name}"
@@ -68,12 +68,12 @@ class ImageTag(NetBoxModel):
             "size",
             "pk",
         )
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=["image", "image_tag", "os", "arch"],
                 name="uniq_imagetag_variants_per_image",
-            )
-        ]
+            ),
+        )
         verbose_name = "Image Tag"
         verbose_name_plural = "Image Tags"
 

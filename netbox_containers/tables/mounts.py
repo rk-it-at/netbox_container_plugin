@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from netbox.tables import NetBoxTable
-from netbox_containers.models import Mount
 
+from netbox_containers.models import Mount
 
 __all__ = ("MountTable",)
 

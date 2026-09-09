@@ -2,8 +2,8 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.urls import reverse
 from netbox.models import NetBoxModel
-from netbox_containers.constants import ContainerStatusChoices
 
+from netbox_containers.constants import ContainerStatusChoices
 
 __all__ = ("Container",)
 
@@ -98,9 +98,6 @@ class Container(NetBoxModel):
 
     def __str__(self):
         return self.name
-
-    def get_container_status_color(self):
-        return ContainerStatusChoices.colors.get(self.status)
 
     def get_status_color(self):
         return ContainerStatusChoices.colors.get(self.status)

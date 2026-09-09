@@ -1,28 +1,33 @@
-from django.core.validators import RegexValidator
-from django.core.exceptions import ValidationError
+from dcim.models import Device
 from django import forms
+from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import (
-    NetBoxModelForm,
-    NetBoxModelFilterSetForm,
     NetBoxModelBulkEditForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelForm,
 )
 from utilities.forms.fields import (
+    CommentField,
     DynamicModelChoiceField,
     DynamicModelMultipleChoiceField,
-    CommentField,
 )
 from utilities.forms.rendering import FieldSet
-from dcim.models import Device
 from virtualization.models import VirtualMachine
-from netbox_containers.models import Container, Pod, Image, ImageTag
-import re
 
+from netbox_containers.forms.fields import (
+    DEVICE_ENTRY_RE,
+    ENV_ENTRY_RE,
+    GROUP_ENTRY_RE,
+    HOST_ENTRY_RE,
+    LineListField,
+)
+from netbox_containers.models import Container, Image, ImageTag, Pod
 
 __all__ = (
-    "ContainerForm",
-    "ContainerFilterForm",
     "ContainerBulkEditForm",
+    "ContainerFilterForm",
+    "ContainerForm",
 )
 
 
@@ -30,11 +35,6 @@ memory_limit_validator = RegexValidator(
     regex=r"^[1-9]\d*(?:[bBkKmMgG])?$",
     message="Enter a positive number optionally followed by b, k, m, or g (e.g. 512m, 1g, 1048576).",
 )
-
-HOST_ENTRY_RE = re.compile(r"^[^:\s]+:[^:\s]+$")  # hostname:ip (simple)
-ENV_ENTRY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=.*$")  # KEY=VALUE
-GROUP_ENTRY_RE = re.compile(r"^[^\s]+$")
-DEVICE_ENTRY_RE = re.compile(r"^/[^\s]*$")
 
 
 class ContainerForm(NetBoxModelForm):
@@ -75,34 +75,42 @@ class ContainerForm(NetBoxModelForm):
             "image_id": "$image",
         },
     )
-    add_host_text = forms.CharField(
-        required=False,
+    add_host_text = LineListField(
         label="Add hosts",
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One per line: hostname:ip (maps to --add-host).",
+        line_regex=HOST_ENTRY_RE,
+        line_error="Invalid add-host entry. Use one per line in the form "
+        "hostname:ip. Bad entries: {bad}",
     )
-    add_group_text = forms.CharField(
-        required=False,
+    add_group_text = LineListField(
         label="Add groups",
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One per line: group name or gid (maps to --add-group).",
+        line_regex=GROUP_ENTRY_RE,
+        line_error="Invalid add-group entry. Use one group name or gid per "
+        "line. Bad entries: {bad}",
     )
-    add_device_text = forms.CharField(
-        required=False,
+    add_device_text = LineListField(
         label="Add devices",
         widget=forms.Textarea(attrs={"rows": 4}),
         help_text="One per line: /dev/... (maps to --device), e.g. /dev/ttyUSB0 or /dev/sda:/dev/xvda:rwm.",
+        line_regex=DEVICE_ENTRY_RE,
+        line_error="Invalid add-device entry. Use one /dev/... entry per "
+        "line. Bad entries: {bad}",
     )
-    environment_text = forms.CharField(
-        required=False,
+    environment_text = LineListField(
         label="Environment variables",
         widget=forms.Textarea(attrs={"rows": 6}),
         help_text="One per line: KEY=VALUE (maps to --env).",
+        line_regex=ENV_ENTRY_RE,
+        line_error="Invalid env entry. Use one per line in the form "
+        "KEY=VALUE. Bad entries: {bad}",
     )
 
     class Meta:
         model = Container
-        fields = [
+        fields = (
             "name",
             "status",
             "user",
@@ -123,7 +131,7 @@ class ContainerForm(NetBoxModelForm):
             "virtual_machines",
             "tags",
             "comments",
-        ]
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -131,12 +139,10 @@ class ContainerForm(NetBoxModelForm):
         self.fields["image_tag"].queryset = ImageTag.objects.none()
 
         if self.instance.pk:
-            self.initial["add_host_text"] = "\n".join(self.instance.add_host or [])
-            self.initial["add_group_text"] = "\n".join(self.instance.add_group or [])
-            self.initial["add_device_text"] = "\n".join(self.instance.add_device or [])
-            self.initial["environment_text"] = "\n".join(
-                self.instance.environment or []
-            )
+            self.initial["add_host_text"] = self.instance.add_host
+            self.initial["add_group_text"] = self.instance.add_group
+            self.initial["add_device_text"] = self.instance.add_device
+            self.initial["environment_text"] = self.instance.environment
 
         # Editing existing container → prepopulate
         if self.instance.pk and self.instance.image_tag:
@@ -158,62 +164,6 @@ class ContainerForm(NetBoxModelForm):
             self.fields["image_tag"].queryset = ImageTag.objects.filter(
                 image=self.instance.image_tag.image
             )
-
-    def clean_add_host_text(self):
-        raw = (self.cleaned_data.get("add_host_text") or "").strip()
-        if not raw:
-            return []
-
-        lines = [line.strip() for line in raw.splitlines() if line.strip()]
-        bad = [line for line in lines if not HOST_ENTRY_RE.match(line)]
-        if bad:
-            raise ValidationError(
-                "Invalid add-host entry. Use one per line in the form hostname:ip. "
-                f"Bad entries: {', '.join(bad[:5])}"
-            )
-        return lines
-
-    def clean_environment_text(self):
-        raw = (self.cleaned_data.get("environment_text") or "").strip()
-        if not raw:
-            return []
-
-        lines = [line.strip() for line in raw.splitlines() if line.strip()]
-        bad = [line for line in lines if not ENV_ENTRY_RE.match(line)]
-        if bad:
-            raise ValidationError(
-                "Invalid env entry. Use one per line in the form KEY=VALUE. "
-                f"Bad entries: {', '.join(bad[:5])}"
-            )
-        return lines
-
-    def clean_add_group_text(self):
-        raw = (self.cleaned_data.get("add_group_text") or "").strip()
-        if not raw:
-            return []
-
-        lines = [line.strip() for line in raw.splitlines() if line.strip()]
-        bad = [line for line in lines if not GROUP_ENTRY_RE.match(line)]
-        if bad:
-            raise ValidationError(
-                "Invalid add-group entry. Use one group name or gid per line. "
-                f"Bad entries: {', '.join(bad[:5])}"
-            )
-        return lines
-
-    def clean_add_device_text(self):
-        raw = (self.cleaned_data.get("add_device_text") or "").strip()
-        if not raw:
-            return []
-
-        lines = [line.strip() for line in raw.splitlines() if line.strip()]
-        bad = [line for line in lines if not DEVICE_ENTRY_RE.match(line)]
-        if bad:
-            raise ValidationError(
-                "Invalid add-device entry. Use one /dev/... entry per line. "
-                f"Bad entries: {', '.join(bad[:5])}"
-            )
-        return lines
 
     def clean(self):
         super().clean()

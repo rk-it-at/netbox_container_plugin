@@ -1,6 +1,6 @@
 from netbox.api.serializers import NetBoxModelSerializer
-from netbox_containers import models
 
+from netbox_containers import models
 
 __all__ = ("ContainerSecretSerializer",)
 

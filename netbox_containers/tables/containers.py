@@ -1,8 +1,8 @@
 import django_tables2 as tables
 from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
-from netbox_containers.models import Container
 
+from netbox_containers.models import Container
 
 __all__ = ("ContainerTable",)
 

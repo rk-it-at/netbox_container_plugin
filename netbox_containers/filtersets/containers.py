@@ -1,10 +1,10 @@
 import django_filters as filters
-from django_filters import CharFilter, ModelMultipleChoiceFilter
 from dcim.models import Device
-from virtualization.models import VirtualMachine
+from django_filters import CharFilter, ModelMultipleChoiceFilter
 from netbox.filtersets import NetBoxModelFilterSet
-from netbox_containers.models import Container, Pod
+from virtualization.models import VirtualMachine
 
+from netbox_containers.models import Container, Pod
 
 __all__ = ("ContainerFilterSet",)
 

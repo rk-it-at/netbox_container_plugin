@@ -1,8 +1,8 @@
 import django_tables2 as tables
 from django.db.models import Count
 from netbox.tables import NetBoxTable, columns
-from netbox_containers.models import Pod
 
+from netbox_containers.models import Pod
 
 __all__ = ("PodTable",)
 

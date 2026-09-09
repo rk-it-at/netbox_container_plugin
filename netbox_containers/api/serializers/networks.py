@@ -1,8 +1,8 @@
-from rest_framework import serializers
-from netbox.api.serializers import NetBoxModelSerializer
 from ipam.models import Prefix
-from netbox_containers import models
+from netbox.api.serializers import NetBoxModelSerializer
+from rest_framework import serializers
 
+from netbox_containers import models
 
 __all__ = ("NetworkSerializer",)
 

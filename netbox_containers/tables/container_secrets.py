@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from netbox.tables import NetBoxTable, columns
-from netbox_containers.models import ContainerSecret
 
+from netbox_containers.models import ContainerSecret
 
 __all__ = ("ContainerSecretTable",)
 

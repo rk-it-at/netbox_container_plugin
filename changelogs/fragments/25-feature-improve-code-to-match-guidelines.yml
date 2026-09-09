@@ -1,0 +1,6 @@
+---
+
+minor_changes:
+  - "[Feature]: Improve code to match guidelines (https://github.com/rk-it-at/netbox_container_plugin/issues/25)"
+
+...

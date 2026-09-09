@@ -1,18 +1,18 @@
-import re
 from django.urls import reverse
 from netbox.views import generic
 from utilities.views import ViewTab, register_model_view
-from netbox_containers import forms, models, tables, filtersets
 
+from netbox_containers import filtersets, forms, models, tables
+from netbox_containers.views.mixins import ParentLookupMixin
 
 __all__ = (
-    "ContainerSecretView",
-    "ContainerSecretListView",
     "ContainerSecretAddView",
-    "ContainerSecretEditView",
-    "ContainerSecretDeleteView",
-    "ContainerSecretCreateView",
     "ContainerSecretChildListView",
+    "ContainerSecretCreateView",
+    "ContainerSecretDeleteView",
+    "ContainerSecretEditView",
+    "ContainerSecretListView",
+    "ContainerSecretView",
 )
 
 
@@ -48,21 +48,16 @@ class ContainerSecretDeleteView(generic.ObjectDeleteView):
     queryset = models.ContainerSecret.objects.all()
 
 
-class ContainerSecretCreateView(generic.ObjectEditView):
+class ContainerSecretCreateView(ParentLookupMixin, generic.ObjectEditView):
     queryset = models.ContainerSecret.objects.all()
     form = forms.ContainerSecretCreateForm
     template_name = "netbox_containers/container_secret_edit.html"
     default_return_url = "plugins:netbox_containers:container"
 
     def _get_container_id(self, request):
-        container_id = self.kwargs.get("container_id")
-        if not container_id and request.resolver_match:
-            container_id = request.resolver_match.kwargs.get("container_id")
-        if not container_id:
-            match = re.search(r"/containers/(?P<cid>\\d+)/secrets/add/?", request.path)
-            if match:
-                container_id = match.group("cid")
-        return int(container_id) if container_id else None
+        return self._get_parent_id(
+            request, "container_id", r"/containers/(?P<id>\d+)/secrets/add/?"
+        )
 
     def get_object(self, queryset=None, **kwargs):
         container_id = self._get_container_id(self.request)

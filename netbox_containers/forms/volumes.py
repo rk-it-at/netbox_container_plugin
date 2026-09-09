@@ -1,19 +1,19 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 from netbox.forms import (
-    NetBoxModelForm,
-    NetBoxModelFilterSetForm,
     NetBoxModelBulkEditForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelForm,
 )
 from utilities.forms.fields import CommentField
 from utilities.forms.rendering import FieldSet
+
 from netbox_containers.models import Volume
 
-
 __all__ = (
-    "VolumeForm",
-    "VolumeFilterForm",
     "VolumeBulkEditForm",
+    "VolumeFilterForm",
+    "VolumeForm",
 )
 
 
@@ -22,7 +22,7 @@ class VolumeForm(NetBoxModelForm):
 
     class Meta:
         model = Volume
-        fields = ["name", "driver", "label", "options", "tags", "comments"]
+        fields = ("name", "driver", "label", "options", "tags", "comments")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

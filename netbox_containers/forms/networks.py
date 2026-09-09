@@ -1,22 +1,22 @@
+from dcim.models import Device
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from netbox.forms import (
-    NetBoxModelForm,
-    NetBoxModelFilterSetForm,
-    NetBoxModelBulkEditForm,
-)
-from utilities.forms.fields import DynamicModelMultipleChoiceField, CommentField
-from utilities.forms.rendering import FieldSet
-from dcim.models import Device
-from virtualization.models import VirtualMachine
 from ipam.models import Prefix
+from netbox.forms import (
+    NetBoxModelBulkEditForm,
+    NetBoxModelFilterSetForm,
+    NetBoxModelForm,
+)
+from utilities.forms.fields import CommentField, DynamicModelMultipleChoiceField
+from utilities.forms.rendering import FieldSet
+from virtualization.models import VirtualMachine
+
 from netbox_containers.models import Network
 
-
 __all__ = (
-    "NetworkForm",
-    "NetworkFilterForm",
     "NetworkBulkEditForm",
+    "NetworkFilterForm",
+    "NetworkForm",
 )
 
 
@@ -50,7 +50,7 @@ class NetworkForm(NetBoxModelForm):
 
     class Meta:
         model = Network
-        fields = [
+        fields = (
             "name",
             "driver",
             "user",
@@ -62,7 +62,7 @@ class NetworkForm(NetBoxModelForm):
             "gateway",
             "tags",
             "comments",
-        ]
+        )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
