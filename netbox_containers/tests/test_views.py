@@ -1,6 +1,8 @@
+from dcim.models import Device, DeviceRole, DeviceType, Manufacturer, Site
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from virtualization.models import VirtualMachine
 
 from netbox_containers.models import (
     Container,
@@ -136,6 +138,89 @@ class DetailViewRenderTests(TestCase):
     def test_empty_pod_detail_renders(self):
         empty = Pod.objects.create(name="empty-pod", status="created")
         self.assertPageOK("pod", {"pk": empty.pk})
+
+
+class HypervisorContainersTabTests(TestCase):
+    """The Containers tab added to Device/VirtualMachine - same idea as NetBox's
+    own Device > Virtual Machines tab: reachable either way, present in the tab
+    bar only once a Container is actually assigned (hide_if_empty)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        manufacturer = Manufacturer.objects.create(name="Vendor", slug="vendor")
+        device_type = DeviceType.objects.create(
+            manufacturer=manufacturer, model="Model", slug="model"
+        )
+        role = DeviceRole.objects.create(name="Role", slug="role")
+        site = Site.objects.create(name="Site", slug="site")
+        cls.device = Device.objects.create(
+            name="device1", device_type=device_type, role=role, site=site
+        )
+        cls.empty_device = Device.objects.create(
+            name="device2", device_type=device_type, role=role, site=site
+        )
+        cls.vm = VirtualMachine.objects.create(name="vm1")
+        cls.empty_vm = VirtualMachine.objects.create(name="vm2")
+
+        cls.container = Container.objects.create(
+            name="hv-tab-container", status="running"
+        )
+        cls.container.devices.set([cls.device])
+        cls.container.virtual_machines.set([cls.vm])
+
+    def setUp(self):
+        user_model = get_user_model()
+        self.user = user_model.objects.create_superuser(
+            username="tester3", email="tester3@example.com", password="pw"
+        )
+        self.client.force_login(self.user)
+
+    def test_device_containers_tab(self):
+        url = reverse("dcim:device_containers", kwargs={"pk": self.device.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.container.name)
+
+    def test_vm_containers_tab(self):
+        url = reverse(
+            "virtualization:virtualmachine_containers", kwargs={"pk": self.vm.pk}
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.container.name)
+
+    def test_empty_device_containers_tab_renders(self):
+        url = reverse("dcim:device_containers", kwargs={"pk": self.empty_device.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.container.name)
+
+    def test_empty_vm_containers_tab_renders(self):
+        url = reverse(
+            "virtualization:virtualmachine_containers", kwargs={"pk": self.empty_vm.pk}
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, self.container.name)
+
+    def test_device_detail_hides_tab_when_no_container_assigned(self):
+        response = self.client.get(
+            reverse("dcim:device", kwargs={"pk": self.empty_device.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(
+            response,
+            reverse("dcim:device_containers", kwargs={"pk": self.empty_device.pk}),
+        )
+
+    def test_device_detail_shows_tab_when_container_assigned(self):
+        response = self.client.get(
+            reverse("dcim:device", kwargs={"pk": self.device.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, reverse("dcim:device_containers", kwargs={"pk": self.device.pk})
+        )
 
 
 class AddFromParentViewTests(TestCase):
