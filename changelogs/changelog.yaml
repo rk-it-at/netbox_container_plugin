@@ -19,3 +19,20 @@ releases:
     - 6-add-support-for-container-device-redirection.yml
     - 7-add-support-for-group-add.yml
     release_date: '2026-05-19'
+  0.3.0:
+    changes:
+      minor_changes:
+      - Add tab for containers to virtual machines and devices (https://github.com/rk-it-at/netbox_container_plugin/issues/1)
+      - '[Feature]: Add AI attribution statement (https://github.com/rk-it-at/netbox_container_plugin/issues/20)'
+      - '[Feature]: Add coding agent guidelines (https://github.com/rk-it-at/netbox_container_plugin/issues/23)'
+      - '[Feature]: Add support for Netbox 4.7 (https://github.com/rk-it-at/netbox_container_plugin/issues/22)'
+      - '[Feature]: Improve code to match guidelines (https://github.com/rk-it-at/netbox_container_plugin/issues/25)'
+      - '[Feature]: Use ruff for Python linting tests (https://github.com/rk-it-at/netbox_container_plugin/issues/17)'
+    fragments:
+    - 1-add-tab-for-containers-to-virtual-machines-and-devices.yml
+    - 17-feature-use-ruff-for-python-linting-tests.yml
+    - 20-feature-add-ai-attribution-statement.yml
+    - 22-feature-add-support-for-netbox-47.yml
+    - 23-feature-add-coding-agent-guidelines.yml
+    - 25-feature-improve-code-to-match-guidelines.yml
+    release_date: '2026-11-05'
